@@ -1,0 +1,205 @@
+//////////////////////////////
+// develop support
+
+// simple print debug way.
+// console.log is not available in this VRC_WebPanel environment
+function debugMsg(s) {
+    document.getElementById("dbgmsg").innerHTML = "" + s;
+}
+
+
+//////////////////////////////
+// VRChat binded method(s)
+
+var bindingsReady = false;
+
+function onBindingsReady(evt) {
+    var div = document.getElementById("message");
+    div.innerHTML = "Ready to go!";
+
+    bindingsReady = true;
+}
+
+document.addEventListener('onBindingsReady', onBindingsReady, false);
+
+
+function GoToRoom(id) {
+    if (!bindingsReady) {
+	debugMsg("! bindingsReady");
+	throw new Error();
+    }
+    engine.call("VRCSDK2.Networking.GoToRoom", id);
+}
+
+
+//////////////////////////////
+// Application code
+
+function jumpToWorld() {
+    // debugMsg("world=" + JSON.stringify(this.obj_world));
+    var radios = document.getElementsByName("choice");
+    var len = radios.length;
+    var type, i;
+
+    for (i = 0 ; i < len; i++ ) {
+        if(radios[i].checked) {
+            type = radios[i].value;
+        }
+    }
+    var type_argument = ":31234~hidden(xEuZcw6bRNM7C2T4b2byE66UkEsQyH)~nonce(wOWhdMa0QLGh4u1tN8mZEdRJtcwIkc)"
+    if (type == "Friends+") {
+        type_argument = ":31234~hidden(xEuZcw6bRNM7C2T4b2byE66UkEsQyH)~nonce(wOWhdMa0QLGh4u1tN8mZEdRJtcwIkc)";
+    } else if (type == "Friends") {
+        type_argument = ":31234~friends(xEuZcw6bRNM7C2T4b2byE66UkEsQyH)~nonce(wOWhdMa0QLGh4u1tN8mZEdRJtcwIkc)";
+    } else if (type == "Invite+") {
+        type_argument = ":31234~private(xEuZcw6bRNM7C2T4b2byE66UkEsQyH)~canRequestInvite()~nonce(wOWhdMa0QLGh4u1tN8mZEdRJtcwIkc)";
+    } else if (type == "Invite") {
+        type_argument = ":31234~private(xEuZcw6bRNM7C2T4b2byE66UkEsQyH)~nonce(wOWhdMa0QLGh4u1tN8mZEdRJtcwIkc)";
+    }
+    copyText("vrchat://launch?=" + this.obj_world.id + type_argument);
+    GoToRoom(this.obj_world.id + type_argument);
+}
+
+function searchWorlds() {
+    // Declare variables 
+    var input, filter, table, tr, td, i;
+    input = document.getElementById("searchInput");
+    filter = input.value.toUpperCase();
+    table = document.getElementById("worlds");
+    tr = table.getElementsByTagName("tr");
+
+    // Loop through all table rows, and hide those who don't match the search query
+    for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[0];
+        if (td) {
+            if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                tr[i].style.display = "";
+            } else {
+                tr[i].style.display = "none";
+            }
+        }
+    }
+}
+    
+function showWorldsByLetter(letter) {
+    // Declare variables 
+    var table, tr, td, i;
+    table = document.getElementById("worlds");
+    tr = table.getElementsByTagName("tr");
+    var regex=/^[A-Z]+$/;
+
+    // Loop through all table rows, and hide those who don't match the search query
+    for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[0];
+        if (td) {
+            if (letter == "Other") {
+                if (!td.innerHTML.toUpperCase().charAt(0).match(regex)) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            } else {
+                if (td.innerHTML.toUpperCase().charAt(0) == letter) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
+}
+    
+function showWorldsByTag(tag) {
+    // Declare variables 
+    var table, tr, td, i;
+    table = document.getElementById("worlds");
+    tr = table.getElementsByTagName("tr");
+
+    // Loop through all table rows, and hide those who don't match the search query
+    for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[0];
+        if (td) {
+            if (td.tags.indexOf(tag) > -1) {
+                tr[i].style.display = "";
+            } else {
+                tr[i].style.display = "none";
+            }
+        }
+    }
+}
+
+function showAllWorlds() {
+  // Declare variables 
+  var table, tr, td, i;
+  table = document.getElementById("worlds");
+  tr = table.getElementsByTagName("tr");
+
+  // Loop through all table rows, and show all
+  for (i = 0; i < tr.length; i++) {
+    td = tr[i].getElementsByTagName("td")[0];
+    if (td) {
+      tr[i].style.display = "";
+    } 
+  }
+}
+
+function copyText(text) {
+    var dummy = document.createElement("input");
+    document.body.appendChild(dummy);
+    dummy.setAttribute("id", "dummy_text");
+    document.getElementById("dummy_text").value = text;
+    dummy.select();
+    document.execCommand("copy");
+    document.body.removeChild(dummy);
+}
+
+function insertWorldTable(worldList) {
+    var table = document.createElement("table");
+    table.id = "worlds";
+    table.style = "left:0; top:150";
+
+    // var head = document.createElement("tr");
+    // head.innerHTML = "<th>name<th>id";
+    // table.appendChild(head);
+
+    worldList.forEach(function(entry){
+        var row = document.createElement("tr");
+
+        var col = document.createElement("td");
+	col.className = "worldEntry";
+        col.innerHTML = "" + entry.name;
+        col.tags = entry.tags;
+        row.appendChild(col);
+
+        // col = document.createElement("td");
+        // col.innerHTML = entry.id;
+        // row.appendChild(col);
+
+        table.appendChild(row);
+
+	row.obj_world = entry;
+    	row.addEventListener("click", jumpToWorld, false);
+    });
+
+    var container = document.getElementById("container");
+    container.appendChild(table);
+}
+
+function testBtnOnClick() {
+    debugMsg("testBtnOnClick");
+    GoToRoom("wrld_48cf80e6-15dd-4c17-8667-c5dc01baa5cb");
+}
+
+function OnDOMContentLoaded() {
+    document.getElementById("urlTxt").value = window.location;
+
+    var btn;
+    btn = document.getElementById("reloadBtn");
+    btn.addEventListener("click", function() {window.location.reload(true);} , false);
+    btn = document.getElementById("testBtn");
+    btn.addEventListener("click", testBtnOnClick , false);
+
+    insertWorldTable(publicWorlds);
+    debugMsg("OnDOMContentLoaded end");
+}
+document.addEventListener('DOMContentLoaded', OnDOMContentLoaded, false);

@@ -1,0 +1,121 @@
+
+<!-- saved from url=(0048)https://naqtn.github.io/vrcspikes/jump-demo.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <style type="text/css">
+      html {
+      font-size: 24px;
+      }
+      body {
+      background-color: lemonchiffon;
+      }
+      td {
+      font-size: 24px;
+      }
+
+      .worldEntry {
+      font-size: 30px;
+      border-width:5px;
+      border-style:double;
+      border-color:#adc196;
+      border-radius: 20px;
+      padding: 10px;
+      }
+
+      .note {
+      font-size: 14px;
+      }
+
+      .top {
+      position: fixed;
+      top:0px;
+      width:10000px;
+      background-color: lemonchiffon;
+      }
+    </style>
+  </head>
+  <body>
+
+    <div id="developerDiv" style="display:none">
+      <!-- TODO refine CSS -->
+      <div style="width:100%; ">
+	<input type="button" value="Reload this page" id="reloadBtn">
+	URL:
+	<input type="text" disabled="true" id="urlTxt" style="width:70%;" value="----------">
+      </div>
+      {Developer: <input type="button" value="test" id="testBtn">[<pre id="dbgmsg">! bindingsReady</pre>]}
+      <hr>
+    </div>
+
+    <div id="top" class="top">
+      <div id="site_title" style="font-size:36px"><strong>Shadow's World Jump</strong></div>
+      <div id="message" style="font-size:">Preparing... (only works with VRChat)</div>
+
+      <hr>
+      <div id="searchbar">
+      <input type="text" id="searchInput" onkeyup="searchWorlds()" placeholder="Search for worlds.. (ONLY USE WHEN ALONE!)" style="padding: 0px 0 0 5px; width: 400px; height: 25px">
+      <button onclick="showAllWorlds()" style="width: 140px; height: 25px">Show All Worlds</button>
+      <form style="font-size:18px; height:0px">
+      <input type="radio" name="choice" value="Friends+" checked> Friends+
+      <input type="radio" name="choice" value="Friends"> Friends
+      <input type="radio" name="choice" value="Invite+"> Invite+
+      <input type="radio" name="choice" value="Invite"> Invite
+      </form>
+      </div>
+      <div id="buttons">
+      <button onclick="showWorldsByLetter('A')">A</button>
+      <button onclick="showWorldsByLetter('B')">B</button>
+      <button onclick="showWorldsByLetter('C')">C</button>
+      <button onclick="showWorldsByLetter('D')">D</button>
+      <button onclick="showWorldsByLetter('E')">E</button>
+      <button onclick="showWorldsByLetter('F')">F</button>
+      <button onclick="showWorldsByLetter('G')">G</button>
+      <button onclick="showWorldsByLetter('H')">H</button>
+      <button onclick="showWorldsByLetter('I')">I</button>
+      <button onclick="showWorldsByLetter('J')">J</button>
+      <button onclick="showWorldsByLetter('K')">K</button>
+      <button onclick="showWorldsByLetter('L')">L</button>
+      <button onclick="showWorldsByLetter('M')">M</button>
+      <button onclick="showWorldsByLetter('N')">N</button>
+      <button onclick="showWorldsByLetter('O')">O</button>
+      <button onclick="showWorldsByLetter('P')">P</button>
+      <button onclick="showWorldsByLetter('Q')">Q</button>
+      <button onclick="showWorldsByLetter('R')">R</button>
+      <button onclick="showWorldsByLetter('S')">S</button>
+      <button onclick="showWorldsByLetter('T')">T</button>
+      <button onclick="showWorldsByLetter('U')">U</button>
+      <button onclick="showWorldsByLetter('V')">V</button>
+      <button onclick="showWorldsByLetter('W')">W</button>
+      <button onclick="showWorldsByLetter('X')">X</button>
+      <button onclick="showWorldsByLetter('Y')">Y</button>
+      <button onclick="showWorldsByLetter('Z')">Z</button>
+      <button onclick="showWorldsByLetter('Other')">Other</button>
+      </div>
+      <div id="tags">
+      <button onclick="showWorldsByTag('favorite')">Shadow's Favorites</button>
+      <button onclick="showWorldsByTag('avatar')">Avatar</button>
+      <button onclick="showWorldsByTag('game')">Game</button>
+      <button onclick="showWorldsByTag('interactive')">Interactive</button>
+      <button onclick="showWorldsByTag('music')">Music</button>
+      <button onclick="showWorldsByTag('video')">Video</button>
+      <button onclick="showWorldsByTag('horror')">Horror</button>
+      <button onclick="showWorldsByTag('hangout')">Hangout</button>
+      <button onclick="showWorldsByTag('aesthetic')">Aesthetic</button>
+      <button onclick="showWorldsByTag('recreation')">Recreation</button>
+      </div>
+      <hr>
+    </div>
+
+    <div id="container" class="container" style="padding: 225px 0 0 0px">
+    </div>
+
+    <hr>
+    <div class="note">
+      <p>edited by: ShadowForest</p>
+      <p>original source: https://naqtn.github.io/vrcspikes/jump-demo.html</p>
+    </div>
+  
+
+  <script src="./World Jump Demo_files/worlds.js.download"></script>
+  <script src="./World Jump Demo_files/jump-demo.js.download"></script>
+
+</body></html>

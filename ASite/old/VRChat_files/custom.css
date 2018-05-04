@@ -1,0 +1,254 @@
+/* ----------------------------------------------------------------
+	Custom CSS
+
+	Add all your Custom Styled CSS here for New Styles or
+	Overwriting Default Theme Styles for Better Hanlding Updates
+-----------------------------------------------------------------*/
+
+body {
+	font-size: 1rem !important;
+}
+
+/* ----------------------------------------------------------------
+	Typography
+-----------------------------------------------------------------*/
+
+#content h2 { font-size: 34px !important;}
+
+
+/* ----------------------------------------------------------------
+	Icons
+-----------------------------------------------------------------*/
+
+.sidenav li svg {
+	position: relative;
+    top: 1px;
+    margin-right: 6px;
+    font-size: 14px;
+    text-align: center;
+    width: 16px !important;
+}
+
+
+/* Primary Menu
+-----------------------------------------------------------------*/
+
+
+#primary-menu ul li > a {
+	font-size: 16px;
+}
+
+#primary-menu ul li:hover > a, #primary-menu ul li.current > a {
+	color: #aaa;
+}
+
+#primary-menu ul ul:not(.mega-menu-column) {
+	border-top: 2px solid #333 !important;
+}
+
+/* Side Navigation */
+
+.sidenav > .ui-tabs-active > a, .sidenav > .ui-tabs-active > a:hover {
+	background-color: #999999 !important;
+}
+
+
+/* Header
+-----------------------------------------------------------------*/
+
+
+/* ----------------------------------------------------------------
+	Content
+-----------------------------------------------------------------*/
+
+.indent {
+	padding-left: 50px;
+}
+
+#content ul {
+	margin-left: 20px !important;
+}
+
+#inner #footer {
+	margin-top: 0 !important;
+}
+
+.terms .increase-text-size {
+	font-size: 18px;
+}
+
+figcaption {
+	font-size: 14px;
+    color: #aaaaaa;
+    font-style: italic;
+    padding: 10px 0 10px 0;
+}
+
+iframe {
+	border-radius: 0.25rem;
+}
+
+
+/* ----------------------------------------------------------------
+	Release
+-----------------------------------------------------------------*/
+
+#page-release .content-wrap .outer {
+	padding: 20px 0 !important;
+}
+
+#page-release .list-group-item {
+	border: none !important;
+}
+
+#page-release .line {
+	width: 96% !important;
+	margin: 30px auto 10px auto !important;
+}
+
+/* ----------------------------------------------------------------
+	Resources
+-----------------------------------------------------------------*/
+
+#help .col_full,
+#help .col_half {
+	float: left;	
+}
+
+#help .item-text {
+	float: left;
+	width: 90%;
+}
+
+#help .col_half .item-text {
+	width:80%;
+}
+
+#resources .feature-box .fbox-icon i {
+	background-color: #555555 !important;
+}
+
+
+/* ----------------------------------------------------------------
+	Moderation
+-----------------------------------------------------------------*/
+
+.avatar-container  {
+	margin: 0 !important;
+}
+
+.mod-tools-container {
+	padding: 0 !important;
+	height: auto !important;
+}
+
+#moderation .feature-box ul li {
+	color: #999;
+}
+
+#moderation .feature-box h3 {
+	padding-top: 15px !important;
+}
+
+#moderation .fbox-icon {
+	font-size: 40px;
+    text-align: center;
+}
+
+/* ----------------------------------------------------------------
+	Login
+-----------------------------------------------------------------*/
+
+#login form .btn-primary {
+	background: #000000 !important;
+	border: 0 !important;
+}
+
+
+/* ----------------------------------------------------------------
+	Slider
+-----------------------------------------------------------------*/
+
+.transparent-dark-bg {
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 20px;
+}
+
+
+
+#content .featured h3 {
+	font-size: 20px !important;
+}
+
+
+.feature-box h3 {
+	font-size: 18px;
+}
+
+/* Promo
+-----------------------------------------------------------------*/
+
+.span-color {
+	color: #aaa !important;
+}
+
+.promo .span-width {
+	width: 70%;
+}
+
+.promo h3 {
+	font-size: 30px;
+}
+
+
+/* Feature Box
+-----------------------------------------------------------------*/
+
+.feature-box h3 {
+	font-size: 18px !important;
+}
+
+.feature-box.fbox-plain .fbox-icon i {
+	color: #222 !important;
+}
+
+/* Footer
+-----------------------------------------------------------------*/
+
+.footer-stick {
+	background-color: #444;
+}
+
+#content .button:hover {
+	background-color: #666;
+}
+
+/* Buttons
+-----------------------------------------------------------------*/
+
+
+.button {
+	background-color: #333 !important;
+}
+
+#content .button-3d:hover {
+	background-color: #aaa !important;
+}
+
+
+ul.tab-nav.tab-nav2 li.ui-state-active a {
+	background-color: #333 !important;
+}
+
+
+/* Copyright + Subscribe
+-----------------------------------------------------------------*/
+
+#subscriber {
+	float: left;
+    width: 400px;
+}
+
+#copyrights .subscribe {
+    margin-top: 0px;
+}
