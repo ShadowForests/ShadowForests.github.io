@@ -325,7 +325,7 @@ var publicWorlds = [
 	tags: ["hangout"]},
 	{id: "wrld_f523d70f-18a4-4c92-b85f-07688c5fdfb4",
 	name: "LSM experiments",
-	tags: ["hangout", "video", "favorite"]},
+	tags: ["hangout", "video", "music", "favorite"]},
 	{id: "wrld_9a1937c1-bd90-4c0e-9a04-7820ef9a11ed",
 	name: "Lumins Loli Avatars",
 	tags: ["avatar"]},
