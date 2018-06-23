@@ -178,7 +178,7 @@ var publicWorlds = [
 	tags: ["aesthetic"]},
 	{id: "wrld_6cbfd2fe-b831-49ba-ac54-3b389b51cf93",
 	name: "Chaos Castle Cove",
-	tags: ["aesthetic", "hangout"]},
+	tags: ["aesthetic", "hangout", "interactive", "music", "favorite"]},
 	{id: "wrld_b433e051-00b6-4d9a-a518-0af3e8bc2879",
 	name: "Chill Forest",
 	tags: ["aesthetic", "hangout"]},
