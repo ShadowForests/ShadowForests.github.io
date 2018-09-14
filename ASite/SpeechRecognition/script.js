@@ -47,6 +47,7 @@ function testSpeech() {
   recognition.maxAlternatives = 1;
 
   recognition.start();
+  testSpeech();
 
   recognition.onresult = function(event) {
     // The SpeechRecognitionEvent results property returns a SpeechRecognitionResultList object
@@ -77,7 +78,6 @@ function testSpeech() {
     recognition.stop();
     testBtn.disabled = false;
     testBtn.textContent = 'Start new test';
-    testSpeech();
   }
 
   recognition.onerror = function(event) {
@@ -124,8 +124,6 @@ function testSpeech() {
       //Fired when the speech recognition service has begun listening to incoming audio with intent to recognize grammars associated with the current SpeechRecognition.
       console.log('SpeechRecognition.onstart');
   }
-  
-  testSpeech();
 }
 
 testBtn.addEventListener('click', testSpeech);
