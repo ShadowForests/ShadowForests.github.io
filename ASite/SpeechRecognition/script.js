@@ -3,19 +3,6 @@ var SpeechGrammarList = SpeechGrammarList || webkitSpeechGrammarList;
 var SpeechRecognitionEvent = SpeechRecognitionEvent || webkitSpeechRecognitionEvent;
 var socket = io.connect('http://localhost:3000');
 
-var phrases = [
-  'I love to sing because it\'s fun',
-  'where are you going',
-  'can I call you tomorrow',
-  'why did you talk while I was talking', 
-  'she enjoys reading books and playing games',
-  'where are you going',
-  'have a great day',
-  'she sells seashells on the seashore'
-];
-
-var phrasePara = document.querySelector('.phrase');
-var resultPara = document.querySelector('.result');
 var diagnosticPara = document.querySelector('.output');
 
 var testBtn = document.querySelector('button');
@@ -31,19 +18,10 @@ function testSpeech() {
   running = true;
   testBtn.textContent = 'Test in progress';
 
-  var phrase = phrases[randomPhrase()];
   // To ensure case consistency while checking with the returned output text
-  phrase = phrase.toLowerCase();
-  phrasePara.textContent = phrase;
-  resultPara.textContent = 'Right or wrong?';
-  resultPara.style.background = 'rgba(0,0,0,0.2)';
-  diagnosticPara.textContent = '...diagnostic messages';
+  // diagnosticPara.textContent = '...diagnostic messages';
 
-  var grammar = '#JSGF V1.0; grammar phrase; public <phrase> = ' + phrase +';';
   var recognition = new SpeechRecognition();
-  var speechRecognitionList = new SpeechGrammarList();
-  speechRecognitionList.addFromString(grammar, 1);
-  recognition.grammars = speechRecognitionList;
   recognition.lang = 'en-US';
   recognition.interimResults = false;
   recognition.maxAlternatives = 1;
@@ -60,17 +38,9 @@ function testSpeech() {
     // The second [0] returns the SpeechRecognitionAlternative at position 0.
     // We then return the transcript property of the SpeechRecognitionAlternative object 
     var speechResult = event.results[0][0].transcript;
-    diagnosticPara.textContent = 'Speech received: ' + speechResult + '.';
+    diagnosticPara.textContent = 'Speech received: ' + speechResult + '. | Confidence: ' + event.results[0][0].confidence;
 
     socket.emit('speech', speechResult);
-
-    if(speechResult === phrase) {
-      resultPara.textContent = 'I heard the correct phrase!';
-      resultPara.style.background = 'lime';
-    } else {
-      resultPara.textContent = 'That didn\'t sound right.';
-      resultPara.style.background = 'red';
-    }
 
     console.log('Confidence: ' + event.results[0][0].confidence);
   }
