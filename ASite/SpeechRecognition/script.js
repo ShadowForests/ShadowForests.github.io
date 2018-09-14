@@ -74,9 +74,10 @@ function testSpeech() {
   }
 
   recognition.onspeechend = function() {
-    recognition.stop();
+    //recognition.stop();
     testBtn.disabled = false;
     testBtn.textContent = 'Start new test';
+    testSpeech();
   }
 
   recognition.onerror = function(event) {
@@ -93,7 +94,6 @@ function testSpeech() {
   recognition.onaudioend = function(event) {
       //Fired when the user agent has finished capturing audio.
       console.log('SpeechRecognition.onaudioend');
-      testSpeech();
   }
   
   recognition.onend = function(event) {
