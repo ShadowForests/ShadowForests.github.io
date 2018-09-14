@@ -136,5 +136,5 @@ function wakeUpSpeech() {
   }
 }
 
-setInterval(wakeUpSpeech,100);
+setInterval(wakeUpSpeech,1000);
 testBtn.addEventListener('click', testSpeech);
