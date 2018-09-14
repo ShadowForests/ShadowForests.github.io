@@ -47,7 +47,6 @@ function testSpeech() {
   recognition.maxAlternatives = 1;
 
   recognition.start();
-  testSpeech();
 
   recognition.onresult = function(event) {
     // The SpeechRecognitionEvent results property returns a SpeechRecognitionResultList object
@@ -126,4 +125,11 @@ function testSpeech() {
   }
 }
 
+function wakeUpSpeech() {
+  if (testBtn.disabled = true) {
+    testSpeech();
+  }
+}
+
+setInterval(wakeUpSpeech,10);
 testBtn.addEventListener('click', testSpeech);
