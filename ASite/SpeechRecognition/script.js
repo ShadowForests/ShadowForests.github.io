@@ -77,7 +77,6 @@ function testSpeech() {
     recognition.stop();
     testBtn.disabled = false;
     testBtn.textContent = 'Start new test';
-    testSpeech();
   }
 
   recognition.onerror = function(event) {
@@ -99,6 +98,7 @@ function testSpeech() {
   recognition.onend = function(event) {
       //Fired when the speech recognition service has disconnected.
       console.log('SpeechRecognition.onend');
+      testSpeech();
   }
   
   recognition.onnomatch = function(event) {
