@@ -93,12 +93,12 @@ function testSpeech() {
   recognition.onaudioend = function(event) {
       //Fired when the user agent has finished capturing audio.
       console.log('SpeechRecognition.onaudioend');
+      testSpeech();
   }
   
   recognition.onend = function(event) {
       //Fired when the speech recognition service has disconnected.
       console.log('SpeechRecognition.onend');
-      testSpeech();
   }
   
   recognition.onnomatch = function(event) {
