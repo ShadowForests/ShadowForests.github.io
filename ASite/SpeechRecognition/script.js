@@ -19,6 +19,7 @@ var resultPara = document.querySelector('.result');
 var diagnosticPara = document.querySelector('.output');
 
 var testBtn = document.querySelector('button');
+var running = false;
 
 function randomPhrase() {
   var number = Math.floor(Math.random() * phrases.length);
@@ -27,6 +28,7 @@ function randomPhrase() {
 
 function testSpeech() {
   testBtn.disabled = true;
+  running = true;
   testBtn.textContent = 'Test in progress';
 
   var phrase = phrases[randomPhrase()];
@@ -76,11 +78,13 @@ function testSpeech() {
   recognition.onspeechend = function() {
     recognition.stop();
     testBtn.disabled = false;
+    running = false;
     testBtn.textContent = 'Start new test';
   }
 
   recognition.onerror = function(event) {
     testBtn.disabled = false;
+    running = false;
     testBtn.textContent = 'Start new test';
     diagnosticPara.textContent = 'Error occurred in recognition: ' + event.error;
   }
@@ -126,8 +130,8 @@ function testSpeech() {
 }
 
 function wakeUpSpeech() {
-  if (testBtn.disabled = false) {
-    testBtn.disabled = true;
+  if (running = false) {
+    running = true;
     testSpeech();
   }
 }
