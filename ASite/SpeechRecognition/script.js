@@ -89,7 +89,8 @@ function testSpeech() {
       console.log('SpeechRecognition.onend');
 
       if (buttonState == -1) {
-        console.log('SpeechRecognition.stopped');
+        console.log('SpeechRecognition.onstopped');
+        socket.emit('status', 'onstopped');
         buttonState = 0;
         testBtn.textContent = 'Start';
         testBtn.disabled = false;
