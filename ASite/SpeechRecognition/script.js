@@ -127,6 +127,7 @@ function testSpeech() {
 
 function wakeUpSpeech() {
   if (testBtn.disabled = false) {
+    testBtn.disabled = true;
     testSpeech();
   }
 }
