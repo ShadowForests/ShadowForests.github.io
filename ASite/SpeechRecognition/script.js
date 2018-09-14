@@ -14,7 +14,7 @@ function randomPhrase() {
 
 function testSpeech() {
   testBtn.disabled = true;
-  testBtn.textContent = 'Speech recognition in progress';
+  testBtn.textContent = 'In progress';
 
   // To ensure case consistency while checking with the returned output text
   // diagnosticPara.textContent = '...diagnostic messages';
