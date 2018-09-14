@@ -80,6 +80,7 @@ function testSpeech() {
     testBtn.disabled = false;
     running = false;
     testBtn.textContent = 'Start new test';
+    testspeech();
   }
 
   recognition.onerror = function(event) {
@@ -87,6 +88,7 @@ function testSpeech() {
     running = false;
     testBtn.textContent = 'Start new test';
     diagnosticPara.textContent = 'Error occurred in recognition: ' + event.error;
+    testspeech();
   }
   
   recognition.onaudiostart = function(event) {
@@ -97,6 +99,7 @@ function testSpeech() {
   recognition.onaudioend = function(event) {
       //Fired when the user agent has finished capturing audio.
       console.log('SpeechRecognition.onaudioend');
+      testspeech();
   }
   
   recognition.onend = function(event) {
@@ -129,12 +132,4 @@ function testSpeech() {
   }
 }
 
-function wakeUpSpeech() {
-  if (running = false) {
-    running = true;
-    testSpeech();
-  }
-}
-
-setInterval(wakeUpSpeech, 100000);
 testBtn.addEventListener('click', testSpeech);
