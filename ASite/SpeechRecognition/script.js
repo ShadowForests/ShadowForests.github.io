@@ -6,7 +6,6 @@ var socket = io.connect('http://localhost:3000');
 var diagnosticPara = document.querySelector('.output');
 
 var testBtn = document.querySelector('button');
-var running = false;
 
 function randomPhrase() {
   var number = Math.floor(Math.random() * phrases.length);
@@ -15,7 +14,6 @@ function randomPhrase() {
 
 function testSpeech() {
   testBtn.disabled = true;
-  running = true;
   testBtn.textContent = 'Test in progress';
 
   // To ensure case consistency while checking with the returned output text
@@ -55,7 +53,6 @@ function testSpeech() {
 
   recognition.onerror = function(event) {
     testBtn.disabled = false;
-    running = false;
     testBtn.textContent = 'Start new test';
     diagnosticPara.textContent = 'Error occurred in recognition: ' + event.error;
     testSpeech();
@@ -85,16 +82,19 @@ function testSpeech() {
   recognition.onsoundstart = function(event) {
       //Fired when any sound — recognisable speech or not — has been detected.
       console.log('SpeechRecognition.onsoundstart');
+      socket.emit('speech', 'SRSTATUS >> onsoundstart');
   }
   
   recognition.onsoundend = function(event) {
       //Fired when any sound — recognisable speech or not — has stopped being detected.
       console.log('SpeechRecognition.onsoundend');
+      socket.emit('speech', 'SRSTATUS >> onsoundend');
   }
   
   recognition.onspeechstart = function (event) {
       //Fired when sound that is recognised by the speech recognition service as speech has been detected.
       console.log('SpeechRecognition.onspeechstart');
+      socket.emit('speech', 'SRSTATUS >> onspeechstart');
   }
   recognition.onstart = function(event) {
       //Fired when the speech recognition service has begun listening to incoming audio with intent to recognize grammars associated with the current SpeechRecognition.
