@@ -82,19 +82,18 @@ function testSpeech() {
   recognition.onsoundstart = function(event) {
       //Fired when any sound — recognisable speech or not — has been detected.
       console.log('SpeechRecognition.onsoundstart');
-      socket.emit('speech', 'SRSTATUS >> onsoundstart');
   }
   
   recognition.onsoundend = function(event) {
       //Fired when any sound — recognisable speech or not — has stopped being detected.
       console.log('SpeechRecognition.onsoundend');
-      socket.emit('speech', 'SRSTATUS >> onsoundend');
+      socket.emit('status', 'onsoundend');
   }
   
   recognition.onspeechstart = function (event) {
       //Fired when sound that is recognised by the speech recognition service as speech has been detected.
       console.log('SpeechRecognition.onspeechstart');
-      socket.emit('speech', 'SRSTATUS >> onspeechstart');
+      socket.emit('status', 'onspeechstart');
   }
   recognition.onstart = function(event) {
       //Fired when the speech recognition service has begun listening to incoming audio with intent to recognize grammars associated with the current SpeechRecognition.
