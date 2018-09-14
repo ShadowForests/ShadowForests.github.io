@@ -84,7 +84,6 @@ function testSpeech() {
     testBtn.disabled = false;
     testBtn.textContent = 'Start new test';
     diagnosticPara.textContent = 'Error occurred in recognition: ' + event.error;
-    testSpeech();
   }
   
   recognition.onaudiostart = function(event) {
@@ -95,13 +94,11 @@ function testSpeech() {
   recognition.onaudioend = function(event) {
       //Fired when the user agent has finished capturing audio.
       console.log('SpeechRecognition.onaudioend');
-    testSpeech();
   }
   
   recognition.onend = function(event) {
       //Fired when the speech recognition service has disconnected.
       console.log('SpeechRecognition.onend');
-    testSpeech();
   }
   
   recognition.onnomatch = function(event) {
@@ -127,6 +124,8 @@ function testSpeech() {
       //Fired when the speech recognition service has begun listening to incoming audio with intent to recognize grammars associated with the current SpeechRecognition.
       console.log('SpeechRecognition.onstart');
   }
+  
+  testSpeech();
 }
 
 testBtn.addEventListener('click', testSpeech);
