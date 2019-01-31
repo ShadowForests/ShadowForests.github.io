@@ -8,6 +8,8 @@ var diagnosticPara = document.querySelector('.output');
 var testBtn = document.querySelector('button');
 var buttonState = 0;
 
+var recognition = new SpeechRecognition();
+
 function speechButton() {
   if (buttonState < 1) {
     buttonState = 1;
@@ -17,6 +19,7 @@ function speechButton() {
     buttonState = -1;
     testBtn.disabled = true;
     testBtn.textContent = 'Stopping...';
+    recognition.onend();
   }
 }
 
@@ -27,7 +30,6 @@ function testSpeech() {
   // To ensure case consistency while checking with the returned output text
   // diagnosticPara.textContent = '...diagnostic messages';
 
-  var recognition = new SpeechRecognition();
   recognition.lang = 'en-US';
   recognition.interimResults = false;
   recognition.maxAlternatives = 1;
