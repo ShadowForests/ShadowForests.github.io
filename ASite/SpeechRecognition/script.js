@@ -60,6 +60,7 @@ function testSpeech() {
     //testBtn.disabled = false;
     //testBtn.textContent = 'Start';
     if (buttonState == 1) {
+      recognition = new SpeechRecognition();
       testSpeech();
     }
   }
