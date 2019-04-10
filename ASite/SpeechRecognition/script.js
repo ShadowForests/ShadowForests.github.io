@@ -83,6 +83,7 @@ function testSpeech() {
       //Fired when the user agent has finished capturing audio.
       console.log('SpeechRecognition.onaudioend');
       if (buttonState == 1) {
+      	recognition = new SpeechRecognition();
         testSpeech();
       }
   }
