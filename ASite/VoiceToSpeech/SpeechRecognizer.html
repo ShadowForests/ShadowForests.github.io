@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width">
+
+    <title>Speech recognizer</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.7.6/dist/semantic.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.7.6/dist/semantic.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+    <div class="absolute-top">
+      <h1 class="main-h1">Voice To Speech</h1>
+      <p id="testButtonInfo" class="bottom-margin">Press start to begin speech recognition.</p>
+
+      <div class="center bottom-margin">
+        <button id="testButton" class="btn center">Start</button>
+        <button id="optionsButton" class="btn btn-square"><i class="cog icon img-centered"></i></button>
+      </div>
+    </div>
+
+    <div class="absolute-bottom">
+
+      <div id="transcript" class="options">
+        <!-- temp -->
+        <p>hi</p>
+      </div>
+
+      <div class="ui small modal options-modal">
+        <i class="close icon"></i>
+        <div class="header">
+          Options
+        </div>
+
+        <div class="content">
+          <div class="ui container grid">
+            <div class="row no-padding">
+              <div class="eight wide column">
+                <p class="option-text">Input Device</p>
+                <select id="audioSource" class="ui dropdown wide-select">
+                </select>
+              </div>
+
+              <div class="eight wide column">
+                <p class="option-text">Output Device</p>
+                <select id="audioOutput" class="ui dropdown wide-select">
+                </select>
+              </div>
+            </div>
+
+            <div class="row no-padding">
+              <div class="eight wide column">
+                <p class="option-text">Input Language</p>
+                <select class="ui search dropdown wide-select">
+                  <option value="">State</option>
+                  <option value="AL">Alabama</option>
+                  <option value="AK">Alaska</option>
+                </select>
+              </div>
+
+              <div class="eight wide column">
+                <p class="option-text">Output Voice</p>
+                <select class="ui search dropdown wide-select">
+                  <option value="">State</option>
+                  <option value="AL">Alabama</option>
+                  <option value="AK">Alaska</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="row no-padding">
+              <div class="wide column">
+                <p class="left floated option-text">Output Volume</p>
+                <p></p>
+                <div class="ui slider" id="slider-1">
+                  <div class="inner">
+                    <div class="track"></div>
+                    <div class="track-fill"></div>
+                    <div class="thumb volume-slider" onmousedown="volume_slider_mousedown()"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row no-padding">
+              <div class="eight wide column">
+                <p class="left floated option-text">Show Transcript</p>
+                <div class="ui right floated toggle checkbox">
+                  <input id="transcript-checkbox" type="checkbox" name="public">
+                  <label></label>
+                </div>
+              </div>
+
+              <div class="eight wide column">
+                <p class="left floated option-text">Show Confidence</p>
+                <div class="ui right floated toggle checkbox">
+                  <input id="confidence-checkbox" type="checkbox" name="public">
+                  <label></label>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="eight wide column">
+                <p class="left floated option-text">Low-Latency</p>
+                <div class="ui right floated toggle checkbox">
+                  <input type="checkbox" name="public">
+                  <label></label>
+                </div>
+              </div>
+
+              <div class="eight wide column">
+                <p class="left floated option-text">Translation</p>
+                <div class="ui right floated toggle checkbox">
+                  <input type="checkbox" name="public">
+                  <label></label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="actions bottom-margin-media">
+          Created by ShadowForest
+        </div>
+      </div>
+
+<!--
+      <div class="top-right-corner">
+        <button id="optionsButton" class="btn">Options</button>
+      </div>
+-->
+
+      <div class="center bottom-margin">
+        <p class="output bottom-margin">
+          <label id="outputDiag">...diagnostic messages</label>
+          </br>
+          <label id="outputConfidence" class="confidence">Confidence: —</label>
+        </p>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
+<!-- μ★ -->
