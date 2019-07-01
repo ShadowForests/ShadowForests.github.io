@@ -21,6 +21,7 @@ const testButton = document.querySelector('button#testButton');
 const optionsButton = $('button#optionsButton');
 const transcriptButton = $('input#transcript-checkbox');
 const confidenceButton = $('input#confidence-checkbox');
+const lowlatencyButton = $('input#lowlatency-checkbox');
 const options = document.querySelector('div#options');
 //const transcript = document.querySelector('div#transcript');
 const audioInputSelect = document.querySelector('select#audioSource');
@@ -29,8 +30,123 @@ const selectors = [audioInputSelect, audioOutputSelect];
 
 var buttonState = 0;
 const interim_wait = 300;
+var lowlatency = lowlatencyButton.prop("checked");
 
 var recognition = new SpeechRecognition();
+
+// If you modify this array, also update default language / dialect below
+var langs =
+[['Afrikaans',       ['af-ZA']],
+ ['አማርኛ',           ['am-ET']],
+ ['Azərbaycanca',    ['az-AZ']],
+ ['বাংলা',            ['bn-BD', 'বাংলাদেশ'],
+                     ['bn-IN', 'ভারত']],
+ ['Bahasa Indonesia',['id-ID']],
+ ['Bahasa Melayu',   ['ms-MY']],
+ ['Català',          ['ca-ES']],
+ ['Čeština',         ['cs-CZ']],
+ ['Dansk',           ['da-DK']],
+ ['Deutsch',         ['de-DE']],
+ ['English',         ['en-AU', 'Australia'],
+                     ['en-CA', 'Canada'],
+                     ['en-IN', 'India'],
+                     ['en-KE', 'Kenya'],
+                     ['en-TZ', 'Tanzania'],
+                     ['en-GH', 'Ghana'],
+                     ['en-NZ', 'New Zealand'],
+                     ['en-NG', 'Nigeria'],
+                     ['en-ZA', 'South Africa'],
+                     ['en-PH', 'Philippines'],
+                     ['en-GB', 'United Kingdom'],
+                     ['en-US', 'United States']],
+ ['Español',         ['es-AR', 'Argentina'],
+                     ['es-BO', 'Bolivia'],
+                     ['es-CL', 'Chile'],
+                     ['es-CO', 'Colombia'],
+                     ['es-CR', 'Costa Rica'],
+                     ['es-EC', 'Ecuador'],
+                     ['es-SV', 'El Salvador'],
+                     ['es-ES', 'España'],
+                     ['es-US', 'Estados Unidos'],
+                     ['es-GT', 'Guatemala'],
+                     ['es-HN', 'Honduras'],
+                     ['es-MX', 'México'],
+                     ['es-NI', 'Nicaragua'],
+                     ['es-PA', 'Panamá'],
+                     ['es-PY', 'Paraguay'],
+                     ['es-PE', 'Perú'],
+                     ['es-PR', 'Puerto Rico'],
+                     ['es-DO', 'República Dominicana'],
+                     ['es-UY', 'Uruguay'],
+                     ['es-VE', 'Venezuela']],
+ ['Euskara',         ['eu-ES']],
+ ['Filipino',        ['fil-PH']],
+ ['Français',        ['fr-FR']],
+ ['Basa Jawa',       ['jv-ID']],
+ ['Galego',          ['gl-ES']],
+ ['ગુજરાતી',           ['gu-IN']],
+ ['Hrvatski',        ['hr-HR']],
+ ['IsiZulu',         ['zu-ZA']],
+ ['Íslenska',        ['is-IS']],
+ ['Italiano',        ['it-IT', 'Italia'],
+                     ['it-CH', 'Svizzera']],
+ ['ಕನ್ನಡ',             ['kn-IN']],
+ ['ភាសាខ្មែរ',          ['km-KH']],
+ ['Latviešu',        ['lv-LV']],
+ ['Lietuvių',        ['lt-LT']],
+ ['മലയാളം',          ['ml-IN']],
+ ['मराठी',             ['mr-IN']],
+ ['Magyar',          ['hu-HU']],
+ ['ລາວ',              ['lo-LA']],
+ ['Nederlands',      ['nl-NL']],
+ ['नेपाली भाषा',        ['ne-NP']],
+ ['Norsk bokmål',    ['nb-NO']],
+ ['Polski',          ['pl-PL']],
+ ['Português',       ['pt-BR', 'Brasil'],
+                     ['pt-PT', 'Portugal']],
+ ['Română',          ['ro-RO']],
+ ['සිංහල',          ['si-LK']],
+ ['Slovenščina',     ['sl-SI']],
+ ['Basa Sunda',      ['su-ID']],
+ ['Slovenčina',      ['sk-SK']],
+ ['Suomi',           ['fi-FI']],
+ ['Svenska',         ['sv-SE']],
+ ['Kiswahili',       ['sw-TZ', 'Tanzania'],
+                     ['sw-KE', 'Kenya']],
+ ['ქართული',       ['ka-GE']],
+ ['Հայերեն',          ['hy-AM']],
+ ['தமிழ்',            ['ta-IN', 'இந்தியா'],
+                     ['ta-SG', 'சிங்கப்பூர்'],
+                     ['ta-LK', 'இலங்கை'],
+                     ['ta-MY', 'மலேசியா']],
+ ['తెలుగు',           ['te-IN']],
+ ['Tiếng Việt',      ['vi-VN']],
+ ['Türkçe',          ['tr-TR']],
+ ['اُردُو',            ['ur-PK', 'پاکستان'],
+                     ['ur-IN', 'بھارت']],
+ ['Ελληνικά',         ['el-GR']],
+ ['български',         ['bg-BG']],
+ ['Pусский',          ['ru-RU']],
+ ['Српски',           ['sr-RS']],
+ ['Українська',        ['uk-UA']],
+ ['한국어',            ['ko-KR']],
+ ['中文',             ['cmn-Hans-CN', '普通话 (中国大陆)'],
+                     ['cmn-Hans-HK', '普通话 (香港)'],
+                     ['cmn-Hant-TW', '中文 (台灣)'],
+                     ['yue-Hant-HK', '粵語 (香港)']],
+ ['日本語',           ['ja-JP']],
+ ['हिन्दी',             ['hi-IN']],
+ ['ภาษาไทย',         ['th-TH']]];
+
+// Set default language / dialect
+/*
+for (var i = 0; i < langs.length; i++) {
+  select_language.options[i] = new Option(langs[i][0], i);
+}
+select_language.selectedIndex = 10;
+updateCountry();
+select_dialect.selectedIndex = 11;
+*/
 
 // Buttons & Utility
 
@@ -108,6 +224,13 @@ confidenceButton.click(function() {
   }
 });
 
+lowlatencyButton.click(function() {
+  lowlatency = lowlatencyButton.prop("checked");
+  recognition.stop();
+  recognition = new SpeechRecognition();
+  testSpeech();
+});
+
 /*
 function toggleOptions() {
   $('.ui.modal.options-modal')
@@ -157,28 +280,28 @@ function get_translation(sourceLang, targetLang, sourceText) {
   var xhr = new XMLHttpRequest();
 
   return new Promise((resolve, reject) => {
-      xhr.onreadystatechange = (e) => {
-          if (xhr.readyState !== 4) {
-              return;
-          }
+    xhr.onreadystatechange = (e) => {
+      if (xhr.readyState !== 4) {
+        return;
+      }
 
-          if (xhr.status === 200) {
-              //console.log('SUCCESS', xhr.responseText);
-              try {
-                  resolve(JSON.parse(xhr.responseText)[0][0][0]);
-              } catch (err) {
-                  resolve("user_error")
-              }
-          } else {
-              console.warn('request_error');
-          }
-      };
+      if (xhr.status === 200) {
+        //console.log('SUCCESS', xhr.responseText);
+        try {
+          resolve(JSON.parse(xhr.responseText)[0][0][0]);
+        } catch (err) {
+          resolve("user_error")
+        }
+      } else {
+        console.warn('request_error');
+      }
+    };
 
-      var url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=" 
-                + sourceLang + "&tl=" + targetLang + "&dt=t&q=" + encodeURI(sourceText);
+    var url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=" 
+              + sourceLang + "&tl=" + targetLang + "&dt=t&q=" + encodeURI(sourceText);
 
-      xhr.open('GET', url);
-      xhr.send();
+    xhr.open('GET', url);
+    xhr.send();
   });
 }
 
@@ -264,7 +387,8 @@ var speech_playing = false;
 var speech_buffer = [];
 var timeout_times = 0;
 
-async function play_audio(audio) {
+async function play_audio(audio_url) {
+  var audio = new Audio(audio_url);
   speech_playing = true;
   audio.onended = function() {
     speech_playing = false;
@@ -281,30 +405,27 @@ async function play_audio(audio) {
       console.error(err);
       timeout_times += 1;
       if (timeout_times > 5) {
+        timeout_times = 0;
         return;
       } else {
-        play_audio(audio);
+        console.log(`Trying again ${timeout_times}`);
+        play_audio(audio_url);
         return;
       }
     });
 }
 
-function play_tts(speech, split=true) {
+function play_tts(speech) {
   //~console.log("play_tts");
-  if (speech == "") {
+  if (speech.length == 0) {
     return;
   }
   try {
     //~console.log("try play_tts");
     console.log(speech.join(" "));
-    var speech = speech;
-    if (split) {
-      speech = speech.splice().split(" ");
-    }
     let lang = 'en-us';
     let audio_url = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=${lang}&q=${speech.join("-")}`;
-    var audio = new Audio(audio_url);
-    play_audio(audio);
+    play_audio(audio_url);
   } catch (err) {
     //~console.log("error play_tts");
     console.error(err);
@@ -316,12 +437,15 @@ var last_interim_speech = [];
 var interim_speech_index = 0;
 
 async function play_buffered_tts(speech, split=true) {
+  if (split) {
+    speech = speech.split(" ");
+  }
   //~console.log("buffered tts");
   speech_buffer.push(speech);
   while (speech_playing) {
     await wait(100);
   }
-  play_tts(speech_buffer.shift(), split);
+  play_tts(speech_buffer.shift());
 }
 
 async function play_interim_tts(interim_speech) {
@@ -365,8 +489,13 @@ function testSpeech() {
   // diagnosticPara.textContent = '...diagnostic messages';
 
   recognition.lang = 'en-US';
-  recognition.continuous = true;
-  recognition.interimResults = true;
+  if (lowlatency) {
+    recognition.continuous = true;
+    recognition.interimResults = true;
+  } else {
+    recognition.continuous = false;
+    recognition.interimResults = false;    
+  }
   recognition.maxAlternatives = 1;
 
   try {
@@ -394,45 +523,58 @@ function testSpeech() {
       return;
     }*/
 
-    var interim_transcript = '';
+    if (lowlatency) {
+      var interim_transcript = '';
 
-    // Initially interim_speech_index is set to 0 on start
-    // interim_transcript is reset to length 1 during silence, which resets interim_speech_index to 1
-    // Any words will increase the index to 2 and above
-    // This ensures words will not be missed when being read
-    for (var i = event.resultIndex; i < event.results.length; ++i) {
-      if (event.results[i].isFinal) {
-        //~final_transcript += event.results[i][0].transcript;
-      } else {
-        interim_transcript += event.results[i][0].transcript;
+      // Initially interim_speech_index is set to 0 on start
+      // interim_transcript is reset to length 1 during silence, which resets interim_speech_index to 1
+      // Any words will increase the index to 2 and above
+      // This ensures words will not be missed when being read
+      for (var i = event.resultIndex; i < event.results.length; ++i) {
+        if (event.results[i].isFinal) {
+          //~final_transcript += event.results[i][0].transcript;
+        } else {
+          interim_transcript += event.results[i][0].transcript;
+        }
+      }
+
+      //~final_transcript = capitalize(final_transcript);
+      //~final_span.innerHTML = linebreak(final_transcript);
+      //~interim_span.innerHTML = linebreak(interim_transcript);
+      /*if (final_transcript || interim_transcript) {
+        showButtons('inline-block');
+      }*/
+      //~console.log(interim_transcript);
+
+      if (buttonState == 1) {
+        //var speechResult = event.results[0][0].transcript;
+        let speechResult = interim_transcript;
+        let confidenceResult = event.results[event.results.length-1][0].confidence;
+        if (speechResult === "") {
+          speechResult = "—";
+          confidenceResult = "—";
+        } else {
+          socket.emit('speech', speechResult);
+          play_interim_tts(speechResult);
+        }
+        diagnosticPara.textContent = 'Speech received: ' + speechResult;
+        outputConfidence.textContent = 'Confidence: ' + confidenceResult;
+      }
+    } else {
+      if (buttonState == 1) {
+        let speechResult = event.results[0][0].transcript;
+        let confidenceResult = event.results[0][0].confidence;
+        if (speechResult === "") {
+          speechResult = "—";
+          confidenceResult = "—";
+        } else {
+          socket.emit('speech', speechResult);
+          play_buffered_tts(speechResult, split=true);
+        }
+        diagnosticPara.textContent = 'Speech received: ' + speechResult;
+        outputConfidence.textContent = 'Confidence: ' + confidenceResult;
       }
     }
-
-    //~final_transcript = capitalize(final_transcript);
-    //~final_span.innerHTML = linebreak(final_transcript);
-    //~interim_span.innerHTML = linebreak(interim_transcript);
-    /*if (final_transcript || interim_transcript) {
-      showButtons('inline-block');
-    }*/
-    //~console.log(interim_transcript);
-
-    if (buttonState == 1) {
-      //var speechResult = event.results[0][0].transcript;
-      let speechResult = interim_transcript;
-      let confidenceResult = event.results[event.results.length-1][0].confidence;
-      if (speechResult === "") {
-        speechResult = "—";
-        confidenceResult = "—";
-      }
-      diagnosticPara.textContent = 'Speech received: ' + speechResult;
-      outputConfidence.textContent = 'Confidence: ' + confidenceResult;
-
-      socket.emit('speech', speechResult);
-
-      //console.log('Confidence: ' + event.results[event.results.length-1][0].confidence);
-    }
-
-    play_interim_tts(interim_transcript);
   }
 
   recognition.onspeechend = function() {
