@@ -564,14 +564,13 @@ select {
 }
 
 .btn-square {
-  position: absolute;
+  position: relative;
   width: 36px;
   height: 36px;
   padding: 0px;
-  margin-left: 10px;
+  margin-left: 5px;
 }
 
 .img-centered {
-  margin: 0 auto;
-  width: 50%;
+  margin-right: 0px !important;
 }
