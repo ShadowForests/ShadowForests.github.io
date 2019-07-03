@@ -603,9 +603,8 @@ select {
   margin: 0 auto !important;
   margin-bottom: 100px !important;
   width: 80%;
-  height: 100px;
+  height: 150px;
   text-align: left;
   word-wrap: break-word;
   overflow: auto;
-  display: block;
 }
