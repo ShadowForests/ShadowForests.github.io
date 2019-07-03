@@ -537,7 +537,18 @@ select {
 .wide-select {
   width: 100%;
   max-width: 300px;
-  min-width: 100px;
+  min-width: 100px !important;
+}
+
+.text {
+  width: inherit;
+  white-space: nowrap;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  padding-top: 1.0px;
+  padding-bottom: 1.0px;
+  text-overflow: clip;  
+  font-family: 'Open Sans',arial,sans-serif;
 }
 
 .absolute-top {

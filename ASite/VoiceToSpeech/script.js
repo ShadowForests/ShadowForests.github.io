@@ -11,132 +11,281 @@ socket.on('connect_error', () => {
   socket.disconnect();
 });
 
-var diagnosticPara = document.querySelector('label#outputDiag');
-var outputConfidence = document.querySelector('label#outputConfidence');
-
+const diagnosticPara = document.querySelector('label#outputDiag');
+const outputConfidence = document.querySelector('label#outputConfidence');
 const testButtonInfo = document.querySelector('p#testButtonInfo');
 const testButton = document.querySelector('button#testButton');
+const outputVoiceText = document.querySelector('p#outputVoiceText');
 //const optionsButton = document.querySelector('button#optionsButton');
 //const transcriptButton = document.querySelector('button#transcriptButton');
 const optionsButton = $('button#optionsButton');
 const transcriptButton = $('input#transcript-checkbox');
 const confidenceButton = $('input#confidence-checkbox');
 const lowlatencyButton = $('input#lowlatency-checkbox');
+const translateButton = $('input#translate-checkbox');
 const options = document.querySelector('div#options');
-//const transcript = document.querySelector('div#transcript');
+const transcript = document.querySelector('div#transcript');
 const audioInputSelect = document.querySelector('select#audioSource');
 const audioOutputSelect = document.querySelector('select#audioOutput');
 const selectors = [audioInputSelect, audioOutputSelect];
+const langInputSelect = document.querySelector('select#searchSelectInput');
+const langOutputSelect = document.querySelector('select#searchSelectOutput');
+const langSelectors = [audioInputSelect, audioOutputSelect];
 
 var buttonState = 0;
 const interim_wait = 300;
+const audio_input_selection_disabled = true;
 var lowlatency = lowlatencyButton.prop("checked");
+var translate = translateButton.prop("checked");
 
 var recognition = new SpeechRecognition();
 
 // If you modify this array, also update default language / dialect below
-var langs =
-[['Afrikaans',       ['af-ZA']],
- ['አማርኛ',           ['am-ET']],
- ['Azərbaycanca',    ['az-AZ']],
- ['বাংলা',            ['bn-BD', 'বাংলাদেশ'],
-                     ['bn-IN', 'ভারত']],
- ['Bahasa Indonesia',['id-ID']],
- ['Bahasa Melayu',   ['ms-MY']],
- ['Català',          ['ca-ES']],
- ['Čeština',         ['cs-CZ']],
- ['Dansk',           ['da-DK']],
- ['Deutsch',         ['de-DE']],
- ['English',         ['en-AU', 'Australia'],
-                     ['en-CA', 'Canada'],
-                     ['en-IN', 'India'],
-                     ['en-KE', 'Kenya'],
-                     ['en-TZ', 'Tanzania'],
-                     ['en-GH', 'Ghana'],
-                     ['en-NZ', 'New Zealand'],
-                     ['en-NG', 'Nigeria'],
-                     ['en-ZA', 'South Africa'],
-                     ['en-PH', 'Philippines'],
-                     ['en-GB', 'United Kingdom'],
-                     ['en-US', 'United States']],
- ['Español',         ['es-AR', 'Argentina'],
-                     ['es-BO', 'Bolivia'],
-                     ['es-CL', 'Chile'],
-                     ['es-CO', 'Colombia'],
-                     ['es-CR', 'Costa Rica'],
-                     ['es-EC', 'Ecuador'],
-                     ['es-SV', 'El Salvador'],
-                     ['es-ES', 'España'],
-                     ['es-US', 'Estados Unidos'],
-                     ['es-GT', 'Guatemala'],
-                     ['es-HN', 'Honduras'],
-                     ['es-MX', 'México'],
-                     ['es-NI', 'Nicaragua'],
-                     ['es-PA', 'Panamá'],
-                     ['es-PY', 'Paraguay'],
-                     ['es-PE', 'Perú'],
-                     ['es-PR', 'Puerto Rico'],
-                     ['es-DO', 'República Dominicana'],
-                     ['es-UY', 'Uruguay'],
-                     ['es-VE', 'Venezuela']],
- ['Euskara',         ['eu-ES']],
- ['Filipino',        ['fil-PH']],
- ['Français',        ['fr-FR']],
- ['Basa Jawa',       ['jv-ID']],
- ['Galego',          ['gl-ES']],
- ['ગુજરાતી',           ['gu-IN']],
- ['Hrvatski',        ['hr-HR']],
- ['IsiZulu',         ['zu-ZA']],
- ['Íslenska',        ['is-IS']],
- ['Italiano',        ['it-IT', 'Italia'],
-                     ['it-CH', 'Svizzera']],
- ['ಕನ್ನಡ',             ['kn-IN']],
- ['ភាសាខ្មែរ',          ['km-KH']],
- ['Latviešu',        ['lv-LV']],
- ['Lietuvių',        ['lt-LT']],
- ['മലയാളം',          ['ml-IN']],
- ['मराठी',             ['mr-IN']],
- ['Magyar',          ['hu-HU']],
- ['ລາວ',              ['lo-LA']],
- ['Nederlands',      ['nl-NL']],
- ['नेपाली भाषा',        ['ne-NP']],
- ['Norsk bokmål',    ['nb-NO']],
- ['Polski',          ['pl-PL']],
- ['Português',       ['pt-BR', 'Brasil'],
-                     ['pt-PT', 'Portugal']],
- ['Română',          ['ro-RO']],
- ['සිංහල',          ['si-LK']],
- ['Slovenščina',     ['sl-SI']],
- ['Basa Sunda',      ['su-ID']],
- ['Slovenčina',      ['sk-SK']],
- ['Suomi',           ['fi-FI']],
- ['Svenska',         ['sv-SE']],
- ['Kiswahili',       ['sw-TZ', 'Tanzania'],
-                     ['sw-KE', 'Kenya']],
- ['ქართული',       ['ka-GE']],
- ['Հայերեն',          ['hy-AM']],
- ['தமிழ்',            ['ta-IN', 'இந்தியா'],
-                     ['ta-SG', 'சிங்கப்பூர்'],
-                     ['ta-LK', 'இலங்கை'],
-                     ['ta-MY', 'மலேசியா']],
- ['తెలుగు',           ['te-IN']],
- ['Tiếng Việt',      ['vi-VN']],
- ['Türkçe',          ['tr-TR']],
- ['اُردُو',            ['ur-PK', 'پاکستان'],
-                     ['ur-IN', 'بھارت']],
- ['Ελληνικά',         ['el-GR']],
- ['български',         ['bg-BG']],
- ['Pусский',          ['ru-RU']],
- ['Српски',           ['sr-RS']],
- ['Українська',        ['uk-UA']],
- ['한국어',            ['ko-KR']],
- ['中文',             ['cmn-Hans-CN', '普通话 (中国大陆)'],
-                     ['cmn-Hans-HK', '普通话 (香港)'],
-                     ['cmn-Hant-TW', '中文 (台灣)'],
-                     ['yue-Hant-HK', '粵語 (香港)']],
- ['日本語',           ['ja-JP']],
- ['हिन्दी',             ['hi-IN']],
- ['ภาษาไทย',         ['th-TH']]];
+var input_langs = [
+  ["af-ZA", "Afrikaans (South Africa)", "Afrikaans (Suid-Afrika)"],
+  ["am-ET", "Amharic (Ethiopia)", "አማርኛ (ኢትዮጵያ)"],
+  ["hy-AM", "Armenian (Armenia)", "Հայ (Հայաստան)"],
+  ["az-AZ", "Azerbaijani (Azerbaijan)", "Azərbaycan (Azərbaycan)"],
+  ["id-ID", "Indonesian (Indonesia)", "Bahasa Indonesia (Indonesia)"],
+  ["ms-MY", "Malay (Malaysia)", "Bahasa Melayu (Malaysia)"],
+  ["bn-BD", "Bengali (Bangladesh)", "বাংলা (বাংলাদেশ)"],
+  ["bn-IN", "Bengali (India)", "বাংলা (ভারত)"],
+  ["ca-ES", "Catalan (Spain)", "Català (Espanya)"],
+  ["cs-CZ", "Czech (Czech Republic)", "Čeština (Česká republika)"],
+  ["da-DK", "Danish (Denmark)", "Dansk (Danmark)"],
+  ["de-DE", "German (Germany)", "Deutsch (Deutschland)"],
+  ["en-AU", "English (Australia)", "English (Australia)"],
+  ["en-CA", "English (Canada)", "English (Canada)"],
+  ["en-GH", "English (Ghana)", "English (Ghana)"],
+  ["en-GB", "English (United Kingdom)", "English (Great Britain)"],
+  ["en-IN", "English (India)", "English (India)"],
+  ["en-IE", "English (Ireland)", "English (Ireland)"],
+  ["en-KE", "English (Kenya)", "English (Kenya)"],
+  ["en-NZ", "English (New Zealand)", "English (New Zealand)"],
+  ["en-NG", "English (Nigeria)", "English (Nigeria)"],
+  ["en-PH", "English (Philippines)", "English (Philippines)"],
+  ["en-SG", "English (Singapore)", "English (Singapore)"],
+  ["en-ZA", "English (South Africa)", "English (South Africa)"],
+  ["en-TZ", "English (Tanzania)", "English (Tanzania)"],
+  ["en-US", "English (United States)", "English (United States)"],
+  ["es-AR", "Spanish (Argentina)", "Español (Argentina)"],
+  ["es-BO", "Spanish (Bolivia)", "Español (Bolivia)"],
+  ["es-CL", "Spanish (Chile)", "Español (Chile)"],
+  ["es-CO", "Spanish (Colombia)", "Español (Colombia)"],
+  ["es-CR", "Spanish (Costa Rica)", "Español (Costa Rica)"],
+  ["es-EC", "Spanish (Ecuador)", "Español (Ecuador)"],
+  ["es-SV", "Spanish (El Salvador)", "Español (El Salvador)"],
+  ["es-ES", "Spanish (Spain)", "Español (España)"],
+  ["es-US", "Spanish (United States)", "Español (Estados Unidos)"],
+  ["es-GT", "Spanish (Guatemala)", "Español (Guatemala)"],
+  ["es-HN", "Spanish (Honduras)", "Español (Honduras)"],
+  ["es-MX", "Spanish (Mexico)", "Español (México)"],
+  ["es-NI", "Spanish (Nicaragua)", "Español (Nicaragua)"],
+  ["es-PA", "Spanish (Panama)", "Español (Panamá)"],
+  ["es-PY", "Spanish (Paraguay)", "Español (Paraguay)"],
+  ["es-PE", "Spanish (Peru)", "Español (Perú)"],
+  ["es-PR", "Spanish (Puerto Rico)", "Español (Puerto Rico)"],
+  ["es-DO", "Spanish (Dominican Republic)", "Español (República Dominicana)"],
+  ["es-UY", "Spanish (Uruguay)", "Español (Uruguay)"],
+  ["es-VE", "Spanish (Venezuela)", "Español (Venezuela)"],
+  ["eu-ES", "Basque (Spain)", "Euskara (Espainia)"],
+  ["fil-PH", "Filipino (Philippines)", "Filipino (Pilipinas)"],
+  ["fr-CA", "French (Canada)", "Français (Canada)"],
+  ["fr-FR", "French (France)", "Français (France)"],
+  ["gl-ES", "Galician (Spain)", "Galego (España)"],
+  ["ka-GE", "Georgian (Georgia)", "ქართული (საქართველო)"],
+  ["gu-IN", "Gujarati (India)", "ગુજરાતી (ભારત)"],
+  ["hr-HR", "Croatian (Croatia)", "Hrvatski (Hrvatska)"],
+  ["zu-ZA", "Zulu (South Africa)", "IsiZulu (Ningizimu Afrika)"],
+  ["is-IS", "Icelandic (Iceland)", "Íslenska (Ísland)"],
+  ["it-IT", "Italian (Italy)", "Italiano (Italia)"],
+  ["jv-ID", "Javanese (Indonesia)", "Jawa (Indonesia)"],
+  ["kn-IN", "Kannada (India)", "ಕನ್ನಡ (ಭಾರತ)"],
+  ["km-KH", "Khmer (Cambodia)", "ភាសាខ្មែរ (កម្ពុជា)"],
+  ["lo-LA", "Lao (Laos)", "ລາວ (ລາວ)"],
+  ["lv-LV", "Latvian (Latvia)", "Latviešu (latviešu)"],
+  ["lt-LT", "Lithuanian (Lithuania)", "Lietuvių (Lietuva)"],
+  ["hu-HU", "Hungarian (Hungary)", "Magyar (Magyarország)"],
+  ["ml-IN", "Malayalam (India)", "മലയാളം (ഇന്ത്യ)"],
+  ["mr-IN", "Marathi (India)", "मराठी (भारत)"],
+  ["nl-NL", "Dutch (Netherlands)", "Nederlands (Nederland)"],
+  ["ne-NP", "Nepali (Nepal)", "नेपाली (नेपाल)"],
+  ["nb-NO", "Norwegian Bokmål (Norway)", "Norsk bokmål (Norge)"],
+  ["pl-PL", "Polish (Poland)", "Polski (Polska)"],
+  ["pt-BR", "Portuguese (Brazil)", "Português (Brasil)"],
+  ["pt-PT", "Portuguese (Portugal)", "Português (Portugal)"],
+  ["ro-RO", "Romanian (Romania)", "Română (România)"],
+  ["si-LK", "Sinhala (Sri Lanka)", "සිංහල (ශ්රී ලංකාව)"],
+  ["sk-SK", "Slovak (Slovakia)", "Slovenčina (Slovensko)"],
+  ["sl-SI", "Slovenian (Slovenia)", "Slovenščina (Slovenija)"],
+  ["su-ID", "Sundanese (Indonesia)", "Urang (Indonesia)"],
+  ["sw-TZ", "Swahili (Tanzania)", "Swahili (Tanzania)"],
+  ["sw-KE", "Swahili (Kenya)", "Swahili (Kenya)"],
+  ["fi-FI", "Finnish (Finland)", "Suomi (Suomi)"],
+  ["sv-SE", "Swedish (Sweden)", "Svenska (Sverige)"],
+  ["ta-IN", "Tamil (India)", "தமிழ் (இந்தியா)"],
+  ["ta-SG", "Tamil (Singapore)", "தமிழ் (சிங்கப்பூர்)"],
+  ["ta-LK", "Tamil (Sri Lanka)", "தமிழ் (இலங்கை)"],
+  ["ta-MY", "Tamil (Malaysia)", "தமிழ் (மலேசியா)"],
+  ["te-IN", "Telugu (India)", "తెలుగు (భారతదేశం)"],
+  ["vi-VN", "Vietnamese (Vietnam)", "Tiếng Việt (Việt Nam)"],
+  ["tr-TR", "Turkish (Turkey)", "Türkçe (Türkiye)"],
+  ["ur-PK", "Urdu (Pakistan)", "اردو (پاکستان)"],
+  ["ur-IN", "Urdu (India)", "اردو (بھارت)"],
+  ["el-GR", "Greek (Greece)", "Ελληνικά (Ελλάδα)"],
+  ["bg-BG", "Bulgarian (Bulgaria)", "Български (България)"],
+  ["ru-RU", "Russian (Russia)", "Русский (Россия)"],
+  ["sr-RS", "Serbian (Serbia)", "Српски (Србија)"],
+  ["uk-UA", "Ukrainian (Ukraine)", "Українська (Україна)"],
+  ["he-IL", "Hebrew (Israel)", "עברית (ישראל)"],
+  ["ar-IL", "Arabic (Israel)", "العربية (إسرائيل)"],
+  ["ar-JO", "Arabic (Jordan)", "العربية (الأردن)"],
+  ["ar-AE", "Arabic (United Arab Emirates)", "العربية (الإمارات)"],
+  ["ar-BH", "Arabic (Bahrain)", "العربية (البحرين)"],
+  ["ar-DZ", "Arabic (Algeria)", "العربية (الجزائر)"],
+  ["ar-SA", "Arabic (Saudi Arabia)", "العربية (السعودية)"],
+  ["ar-IQ", "Arabic (Iraq)", "العربية (العراق)"],
+  ["ar-KW", "Arabic (Kuwait)", "العربية (الكويت)"],
+  ["ar-MA", "Arabic (Morocco)", "العربية (المغرب)"],
+  ["ar-TN", "Arabic (Tunisia)", "العربية (تونس)"],
+  ["ar-OM", "Arabic (Oman)", "العربية (عُمان)"],
+  ["ar-PS", "Arabic (State of Palestine)", "العربية (فلسطين)"],
+  ["ar-QA", "Arabic (Qatar)", "العربية (قطر)"],
+  ["ar-LB", "Arabic (Lebanon)", "العربية (لبنان)"],
+  ["ar-EG", "Arabic (Egypt)", "العربية (مصر)"],
+  ["fa-IR", "Persian (Iran)", "فارسی (ایران)"],
+  ["hi-IN", "Hindi (India)", "हिन्दी (भारत)"],
+  ["th-TH", "Thai (Thailand)", "ไทย (ประเทศไทย)"],
+  ["ko-KR", "Korean (South Korea)", "한국어 (대한민국)"],
+  ["zh-TW", "Chinese, Mandarin (Traditional, Taiwan)", "國語 (台灣)"],
+  ["yue-Hant-HK", "Chinese, Cantonese (Traditional, Hong Kong)", "廣東話 (香港)"],
+  ["ja-JP", "Japanese (Japan)", "日本語（日本）"],
+  ["zh-HK", "Chinese, Mandarin (Simplified, Hong Kong)", "普通話 (香港)"],
+  ["zh", "Chinese, Mandarin (Simplified, China)", "普通话 (中国大陆)"],
+]
+
+var output_langs = [
+  ["af-ZA", "Afrikaans (South Africa)", "Afrikaans (Suid-Afrika)"],
+  ["am-ET", "Amharic (Ethiopia)", "አማርኛ (ኢትዮጵያ)"],
+  ["hy-AM", "Armenian (Armenia)", "Հայ (Հայաստան)"],
+  ["az-AZ", "Azerbaijani (Azerbaijan)", "Azərbaycan (Azərbaycan)"],
+  ["id-ID", "Indonesian (Indonesia)", "Bahasa Indonesia (Indonesia)"],
+  ["ms-MY", "Malay (Malaysia)", "Bahasa Melayu (Malaysia)"],
+  ["bn-BD", "Bengali (Bangladesh)", "বাংলা (বাংলাদেশ)"],
+  ["bn-IN", "Bengali (India)", "বাংলা (ভারত)"],
+  ["ca-ES", "Catalan (Spain)", "Català (Espanya)"],
+  ["cs-CZ", "Czech (Czech Republic)", "Čeština (Česká republika)"],
+  ["da-DK", "Danish (Denmark)", "Dansk (Danmark)"],
+  ["de-DE", "German (Germany)", "Deutsch (Deutschland)"],
+  ["en-AU", "English (Australia)", "English (Australia)"],
+  ["en-GB", "English (United Kingdom)", "English (Great Britain)"],
+  ["en-IN", "English (India)", "English (India)"],
+  ["en-NZ", "English (New Zealand)", "English (New Zealand)"],
+  ["en-US", "English (United States)", "English (United States)"],
+  ["es-ES", "Spanish (Spain)", "Español (España)"],
+  ["es-US", "Spanish (United States)", "Español (Estados Unidos)"],
+  ["fil-PH", "Filipino (Philippines)", "Filipino (Pilipinas)"],
+  ["fr-CA", "French (Canada)", "Français (Canada)"],
+  ["fr-FR", "French (France)", "Français (France)"],
+  ["gl-ES", "Galician (Spain)", "Galego (España)"],
+  ["ka-GE", "Georgian (Georgia)", "ქართული (საქართველო)"],
+  ["gu-IN", "Gujarati (India)", "ગુજરાતી (ભારત)"],
+  ["hr-HR", "Croatian (Croatia)", "Hrvatski (Hrvatska)"],
+  ["zu-ZA", "Zulu (South Africa)", "IsiZulu (Ningizimu Afrika)"],
+  ["is-IS", "Icelandic (Iceland)", "Íslenska (Ísland)"],
+  ["it-IT", "Italian (Italy)", "Italiano (Italia)"],
+  ["jv-ID", "Javanese (Indonesia)", "Jawa (Indonesia)"],
+  ["kn-IN", "Kannada (India)", "ಕನ್ನಡ (ಭಾರತ)"],
+  ["km-KH", "Khmer (Cambodia)", "ភាសាខ្មែរ (កម្ពុជា)"],
+  ["lo-LA", "Lao (Laos)", "ລາວ (ລາວ)"],
+  ["lv-LV", "Latvian (Latvia)", "Latviešu (latviešu)"],
+  ["lt-LT", "Lithuanian (Lithuania)", "Lietuvių (Lietuva)"],
+  ["hu-HU", "Hungarian (Hungary)", "Magyar (Magyarország)"],
+  ["ml-IN", "Malayalam (India)", "മലയാളം (ഇന്ത്യ)"],
+  ["mr-IN", "Marathi (India)", "मराठी (भारत)"],
+  ["nl-NL", "Dutch (Netherlands)", "Nederlands (Nederland)"],
+  ["ne-NP", "Nepali (Nepal)", "नेपाली (नेपाल)"],
+  ["nb-NO", "Norwegian Bokmål (Norway)", "Norsk bokmål (Norge)"],
+  ["pl-PL", "Polish (Poland)", "Polski (Polska)"],
+  ["pt-BR", "Portuguese (Brazil)", "Português (Brasil)"],
+  ["pt-PT", "Portuguese (Portugal)", "Português (Portugal)"],
+  ["ro-RO", "Romanian (Romania)", "Română (România)"],
+  ["si-LK", "Sinhala (Sri Lanka)", "සිංහල (ශ්රී ලංකාව)"],
+  ["sk-SK", "Slovak (Slovakia)", "Slovenčina (Slovensko)"],
+  ["sl-SI", "Slovenian (Slovenia)", "Slovenščina (Slovenija)"],
+  ["su-ID", "Sundanese (Indonesia)", "Urang (Indonesia)"],
+  ["sw-TZ", "Swahili (Tanzania)", "Swahili (Tanzania)"],
+  ["fi-FI", "Finnish (Finland)", "Suomi (Suomi)"],
+  ["sv-SE", "Swedish (Sweden)", "Svenska (Sverige)"],
+  ["ta-IN", "Tamil (India)", "தமிழ் (இந்தியா)"],
+  ["te-IN", "Telugu (India)", "తెలుగు (భారతదేశం)"],
+  ["vi-VN", "Vietnamese (Vietnam)", "Tiếng Việt (Việt Nam)"],
+  ["tr-TR", "Turkish (Turkey)", "Türkçe (Türkiye)"],
+  ["el-GR", "Greek (Greece)", "Ελληνικά (Ελλάδα)"],
+  ["bg-BG", "Bulgarian (Bulgaria)", "Български (България)"],
+  ["ru-RU", "Russian (Russia)", "Русский (Россия)"],
+  ["sr-RS", "Serbian (Serbia)", "Српски (Србија)"],
+  ["uk-UA", "Ukrainian (Ukraine)", "Українська (Україна)"],
+  ["ar-SA", "Arabic (Saudi Arabia)", "العربية (السعودية)"],
+  ["fa-IR", "Persian (Iran)", "فارسی (ایران)"],
+  ["hi-IN", "Hindi (India)", "हिन्दी (भारत)"],
+  ["th-TH", "Thai (Thailand)", "ไทย (ประเทศไทย)"],
+  ["ko-KR", "Korean (South Korea)", "한국어 (대한민국)"],
+  ["zh-TW", "Chinese, Mandarin (Traditional, Taiwan)", "國語 (台灣)"],
+  ["ja-JP", "Japanese (Japan)", "日本語（日本）"],
+  ["zh-HK", "Chinese, Mandarin (Simplified, Hong Kong)", "普通話 (香港)"],
+  ["zh", "Chinese, Mandarin (Simplified, China)", "普通话 (中国大陆)"],
+]
+
+// Sort alphabetical by English name
+input_langs.sort(function(a, b){
+    var keyA = a[1],
+        keyB = b[1];
+    // Compare the 2 values
+    if (keyA < keyB) return -1;
+    if (keyA > keyB) return 1;
+    return 0;
+});
+
+output_langs.sort(function(a, b){
+    var keyA = a[1],
+        keyB = b[1];
+    // Compare the 2 values
+    if (keyA < keyB) return -1;
+    if (keyA > keyB) return 1;
+    return 0;
+});
+
+// Fill languages
+
+function gotLanguages(input_langs, output_langs) {
+  for (let i = 0; i !== input_langs.length; ++i) {
+    const option = document.createElement('option');
+    option.value = input_langs[i][0];
+    option.text = input_langs[i][1];
+    langInputSelect.appendChild(option);
+  }
+  for (let i = 0; i !== output_langs.length; ++i) {
+    const option = document.createElement('option');
+    option.value = output_langs[i][0];
+    option.text = output_langs[i][1];
+    langOutputSelect.appendChild(option);
+  }
+}
+
+gotLanguages(input_langs, output_langs);
+
+// Set default lang selections
+langInputSelect.selectedIndex = 45;
+langOutputSelect.selectedIndex = 20;
+
+function getInputLang() {
+  return langInputSelect.options[langInputSelect.selectedIndex].value;
+}
+
+function getOutputLang() {
+  return langOutputSelect.options[langOutputSelect.selectedIndex].value;
+}
 
 // Set default language / dialect
 /*
@@ -149,6 +298,22 @@ select_dialect.selectedIndex = 11;
 */
 
 // Buttons & Utility
+
+$('#searchSelectInput')
+  .dropdown()
+;
+
+$('#searchSelectOutput')
+  .dropdown()
+;
+
+$('#audioSource')
+  .dropdown()
+;
+
+$('#audioOutput')
+  .dropdown()
+;
 
 $('.ui.slider')
   .slider({
@@ -196,6 +361,9 @@ $('.volume-slider').mouseleave(function() {
 
 optionsButton.click(function() {
   $('.ui.modal.options-modal')
+    .modal({
+      autofocus: false
+    })
     .modal('show')
   ;
 
@@ -226,9 +394,24 @@ confidenceButton.click(function() {
 
 lowlatencyButton.click(function() {
   lowlatency = lowlatencyButton.prop("checked");
-  recognition.stop();
-  recognition = new SpeechRecognition();
-  testSpeech();
+  if (lowlatency && translateButton.prop("checked")) {
+    translateButton.click();
+  }
+  if (buttonState == 1) {
+    restartSpeech();
+  }
+});
+
+translateButton.click(function() {
+  translate = translateButton.prop("checked");
+  if (translateButton.prop("checked")) {
+    if (lowlatencyButton.prop("checked")) {
+      lowlatencyButton.click();
+    }
+    outputVoiceText.textContent = "Output Language";
+  } else {
+    outputVoiceText.textContent = "Output Voice";
+  }
 });
 
 /*
@@ -316,7 +499,7 @@ async function test() {
 test();
 */
 
-//
+// Fill devices
 
 function gotDevices(deviceInfos) {
   // Handles being called several times to update labels. Preserve values.
@@ -331,7 +514,11 @@ function gotDevices(deviceInfos) {
     const option = document.createElement('option');
     option.value = deviceInfo.deviceId;
     if (deviceInfo.kind === 'audioinput') {
-      option.text = deviceInfo.label || `microphone ${audioInputSelect.length + 1}`;
+      if (audio_input_selection_disabled) {
+        option.text = "Set via browser";
+      } else {
+        option.text = deviceInfo.label || `microphone ${audioInputSelect.length + 1}`;
+      }
       audioInputSelect.appendChild(option);
     } else if (deviceInfo.kind === 'audiooutput') {
       option.text = deviceInfo.label || `speaker ${audioOutputSelect.length + 1}`;
@@ -349,8 +536,9 @@ function gotDevices(deviceInfos) {
 
 navigator.mediaDevices.enumerateDevices().then(gotDevices).catch(handleError);
 
+var audioDestination;
 function changeAudioDestination() {
-  const audioDestination = audioOutputSelect.value;
+  audioDestination = audioOutputSelect.value;
 }
 
 function gotStream(stream) {
@@ -360,7 +548,7 @@ function gotStream(stream) {
 }
 
 function handleError(error) {
-  console.log('navigator.MediaDevices.getUserMedia error: ', error.message, error.name);
+  console.log('navigator.mediaDevices.getUserMedia error: ', error.message, error.name);
 }
 
 function start() {
@@ -376,10 +564,22 @@ function start() {
   navigator.mediaDevices.getUserMedia(constraints).then(gotStream).then(gotDevices).catch(handleError);
 }
 
-audioInputSelect.onchange = start;
-audioOutputSelect.onchange = changeAudioDestination;
+//audioInputSelect.onchange = start;
+/*
+audioInputSelect.onchange = function() {
+  if (buttonState == 1) {
+    testSpeech();
+  }
+}
+*/
 
-start();
+function restartSpeech() {
+  recognition = new SpeechRecognition();
+  testSpeech();
+}
+
+audioOutputSelect.onchange = changeAudioDestination;
+langInputSelect.onchange = restartSpeech;
 
 //
 
@@ -389,6 +589,7 @@ var timeout_times = 0;
 
 async function play_audio(audio_url) {
   var audio = new Audio(audio_url);
+  audio.setSinkId(audioDestination).catch((err) => {});
   speech_playing = true;
   audio.onended = function() {
     speech_playing = false;
@@ -415,16 +616,29 @@ async function play_audio(audio_url) {
     });
 }
 
-function play_tts(speech) {
+async function play_tts(speech) {
   //~console.log("play_tts");
   if (speech.length == 0) {
     return;
   }
   try {
     //~console.log("try play_tts");
+    let inputLang = getInputLang();
+    let outputLang = getOutputLang();
+    /* Using native speech synthesis
+    speechSynthesis.speak(new SpeechSynthesisUtterance(speech.join(" ")));
+    return;
+    */
+    if (translate) {
+      speech = await get_translation(inputLang, outputLang, speech.join(" "));
+      speech = speech.split(" ");
+    }
     console.log(speech.join(" "));
-    let lang = 'en-us';
-    let audio_url = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=${lang}&q=${speech.join("-")}`;
+    speech = speech.join("-");
+    if (speech === "") {
+      return;
+    }
+    let audio_url = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=${outputLang}&q=${speech}`;
     play_audio(audio_url);
   } catch (err) {
     //~console.log("error play_tts");
@@ -450,12 +664,11 @@ async function play_buffered_tts(speech, split=true) {
 
 async function play_interim_tts(interim_speech) {
   //~console.log("interim tts");
-  console.log("ERER");
-  console.log(interim_speech);
   interim_speech = interim_speech.split(" ");
+  if (interim_speech[0] !== "") {
+    interim_speech.unshift("");
+  }
   console.log(interim_speech);
-  console.log(interim_speech.length);
-  console.log(interim_speech_index);
   if (interim_speech.length < interim_speech_index) {
     interim_speech_index = 0;
   }
@@ -488,7 +701,7 @@ function testSpeech() {
   // To ensure case consistency while checking with the returned output text
   // diagnosticPara.textContent = '...diagnostic messages';
 
-  recognition.lang = 'en-US';
+  recognition.lang = getInputLang();
   if (lowlatency) {
     recognition.continuous = true;
     recognition.interimResults = true;
@@ -553,9 +766,13 @@ function testSpeech() {
         if (speechResult === "") {
           speechResult = "—";
           confidenceResult = "—";
+          play_interim_tts("");
         } else {
           socket.emit('speech', speechResult);
           play_interim_tts(speechResult);
+          // UPDATE LATER ###############
+          // ADD TIMESTAMP, REMOVE DUPLICATE ARG
+          transcript.textContent += speechResult;
         }
         diagnosticPara.textContent = 'Speech received: ' + speechResult;
         outputConfidence.textContent = 'Confidence: ' + confidenceResult;
@@ -570,6 +787,9 @@ function testSpeech() {
         } else {
           socket.emit('speech', speechResult);
           play_buffered_tts(speechResult, split=true);
+          // UPDATE LATER ###############
+          // ADD TIMESTAMP, REMOVE DUPLICATE ARG
+          transcript.textContent += `${speechResult}. `;
         }
         diagnosticPara.textContent = 'Speech received: ' + speechResult;
         outputConfidence.textContent = 'Confidence: ' + confidenceResult;
@@ -582,8 +802,7 @@ function testSpeech() {
     //testButton.disabled = false;
     //testButton.textContent = 'Start';
     if (buttonState == 1) {
-      recognition = new SpeechRecognition();
-      testSpeech();
+      restartSpeech();
     }
   }
 
@@ -592,69 +811,68 @@ function testSpeech() {
     //testButton.textContent = 'Start';
     if (buttonState == 1) {
       diagnosticPara.textContent = 'Error occurred in recognition: ' + event.error;
-      testSpeech();
+      restartSpeech();
     }
   }
   
   recognition.onaudiostart = function(event) {
-      //Fired when the user agent has started to capture audio.
-      console.log('SpeechRecognition.onaudiostart');
+    //Fired when the user agent has started to capture audio.
+    console.log('SpeechRecognition.onaudiostart');
   }
   
   recognition.onaudioend = function(event) {
-      //Fired when the user agent has finished capturing audio.
-      console.log('SpeechRecognition.onaudioend');
-      if (buttonState == 1) {
-      	recognition = new SpeechRecognition();
-        testSpeech();
-      }
+    //Fired when the user agent has finished capturing audio.
+    console.log('SpeechRecognition.onaudioend');
+    if (buttonState == 1) {
+      restartSpeech();
+    }
   }
   
   recognition.onend = function(event) {
-      //Fired when the speech recognition service has disconnected.
-      console.log('SpeechRecognition.onend');
+    //Fired when the speech recognition service has disconnected.
+    console.log('SpeechRecognition.onend');
 
-      if (buttonState == -1) {
-        console.log('SpeechRecognition.onstopped');
-        socket.emit('status', 'onstopped');
-        buttonState = 0;
-        testButtonInfo.textContent = 'Press start to begin speech recognition';
-        testButton.textContent = 'Start';
-        testButton.disabled = false;
-        recognition.stop();
-      }
+    if (buttonState == -1) {
+      console.log('SpeechRecognition.onstopped');
+      socket.emit('status', 'onstopped');
+      buttonState = 0;
+      testButtonInfo.textContent = 'Press start to begin speech recognition';
+      testButton.textContent = 'Start';
+      testButton.disabled = false;
+      recognition.stop();
+    }
   }
   
   recognition.onnomatch = function(event) {
-      //Fired when the speech recognition service returns a final result with no significant recognition. This may involve some degree of recognition, which doesn't meet or exceed the confidence threshold.
-      console.log('SpeechRecognition.onnomatch');
+    //Fired when the speech recognition service returns a final result with no significant recognition. This may involve some degree of recognition, which doesn't meet or exceed the confidence threshold.
+    console.log('SpeechRecognition.onnomatch');
   }
   
   recognition.onsoundstart = function(event) {
-      //Fired when any sound — recognisable speech or not — has been detected.
-      if (buttonState == 1) {
-        console.log('SpeechRecognition.onsoundstart');
-      }
+    //Fired when any sound — recognisable speech or not — has been detected.
+    if (buttonState == 1) {
+      console.log('SpeechRecognition.onsoundstart');
+    }
   }
   
   recognition.onsoundend = function(event) {
-      //Fired when any sound — recognisable speech or not — has stopped being detected.
-      if (buttonState == 1) {
-        console.log('SpeechRecognition.onsoundend');
-        socket.emit('status', 'onsoundend');
-      }
+    //Fired when any sound — recognisable speech or not — has stopped being detected.
+    if (buttonState == 1) {
+      console.log('SpeechRecognition.onsoundend');
+      socket.emit('status', 'onsoundend');
+    }
   }
   
   recognition.onspeechstart = function (event) {
-      //Fired when sound that is recognised by the speech recognition service as speech has been detected.
-      if (buttonState == 1) {
-        console.log('SpeechRecognition.onspeechstart');
-        socket.emit('status', 'onspeechstart');
-      }
+    //Fired when sound that is recognised by the speech recognition service as speech has been detected.
+    if (buttonState == 1) {
+      console.log('SpeechRecognition.onspeechstart');
+      socket.emit('status', 'onspeechstart');
+    }
   }
   recognition.onstart = function(event) {
-      //Fired when the speech recognition service has begun listening to incoming audio with intent to recognize grammars associated with the current SpeechRecognition.
-      console.log('SpeechRecognition.onstart');
+    //Fired when the speech recognition service has begun listening to incoming audio with intent to recognize grammars associated with the current SpeechRecognition.
+    console.log('SpeechRecognition.onstart');
   }
 }
 

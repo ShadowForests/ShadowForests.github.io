@@ -34,7 +34,7 @@
 
       <div id="transcript" class="options">
         <!-- temp -->
-        <p>hi</p>
+
       </div>
 
       <div class="ui small modal options-modal">
@@ -48,13 +48,13 @@
             <div class="row no-padding">
               <div class="eight wide column">
                 <p class="option-text">Input Device</p>
-                <select id="audioSource" class="ui dropdown wide-select">
+                <select id="audioSource" class="ui selection dropdown wide-select disabled">
                 </select>
               </div>
 
               <div class="eight wide column">
                 <p class="option-text">Output Device</p>
-                <select id="audioOutput" class="ui dropdown wide-select">
+                <select id="audioOutput" class="ui selection dropdown wide-select">
                 </select>
               </div>
             </div>
@@ -62,19 +62,13 @@
             <div class="row no-padding">
               <div class="eight wide column">
                 <p class="option-text">Input Language</p>
-                <select class="ui search dropdown wide-select">
-                  <option value="">State</option>
-                  <option value="AL">Alabama</option>
-                  <option value="AK">Alaska</option>
+                <select id="searchSelectInput" class="ui search selection dropdown wide-select">
                 </select>
               </div>
 
               <div class="eight wide column">
-                <p class="option-text">Output Voice</p>
-                <select class="ui search dropdown wide-select">
-                  <option value="">State</option>
-                  <option value="AL">Alabama</option>
-                  <option value="AK">Alaska</option>
+                <p id="outputVoiceText" class="option-text">Output Voice</p>
+                <select id="searchSelectOutput" class="ui search selection dropdown wide-select">
                 </select>
               </div>
             </div>
@@ -121,9 +115,9 @@
               </div>
 
               <div class="eight wide column">
-                <p class="left floated option-text">Translation</p>
+                <p class="left floated option-text">Translate</p>
                 <div class="ui right floated toggle checkbox">
-                  <input type="checkbox" name="public">
+                  <input id="translate-checkbox" type="checkbox" name="public">
                   <label></label>
                 </div>
               </div>
