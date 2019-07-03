@@ -37,6 +37,7 @@ const interim_wait = 300;
 const audio_input_selection_disabled = true;
 var lowlatency = lowlatencyButton.prop("checked");
 var translate = translateButton.prop("checked");
+var volume = 100;
 
 var recognition = new SpeechRecognition();
 
@@ -318,7 +319,7 @@ $('#audioOutput')
 $('.ui.slider')
   .slider({
     min: 0,
-    max: 200,
+    max: 100,
     start: 100,
     step: 0,
     onMove: function (data) {
@@ -376,9 +377,11 @@ optionsButton.click(function() {
   ;
 });
 
+var transcriptToggled = false;
 transcriptButton.click(function() {
   if (transcriptButton.prop("checked")) {
     transcript.style.display = "block";
+    transcriptToggled = true;
   } else {
     transcript.style.display = "none";
   }
@@ -413,6 +416,29 @@ translateButton.click(function() {
     outputVoiceText.textContent = "Output Voice";
   }
 });
+
+const out = transcript; 
+
+setInterval(function() {
+    // allow 1px inaccuracy by adding 1
+    const isScrolledToBottom = out.scrollHeight - out.clientHeight <= out.scrollTop + 1
+/*
+    const newElement = document.createElement("div")
+
+    newElement.textContent = format(c++, 'Bottom position:', out.scrollHeight - out.clientHeight,  'Scroll position:', out.scrollTop)
+
+    out.appendChild(newElement)
+*/
+    // scroll to bottom if isScrolledToBottom is true
+    if (isScrolledToBottom || transcriptToggled) {
+      out.scrollTop = out.scrollHeight - out.clientHeight;
+      transcriptToggled = false;
+    }
+}, 500)
+
+function format () {
+  return Array.prototype.slice.call(arguments).join(' ')
+}
 
 /*
 function toggleOptions() {
@@ -515,7 +541,7 @@ function gotDevices(deviceInfos) {
     option.value = deviceInfo.deviceId;
     if (deviceInfo.kind === 'audioinput') {
       if (audio_input_selection_disabled) {
-        option.text = "Set via browser";
+        option.text = "Set from browser";
       } else {
         option.text = deviceInfo.label || `microphone ${audioInputSelect.length + 1}`;
       }
@@ -590,6 +616,7 @@ var timeout_times = 0;
 async function play_audio(audio_url) {
   var audio = new Audio(audio_url);
   audio.setSinkId(audioDestination).catch((err) => {});
+  audio.volume = volume / 100.0;
   speech_playing = true;
   audio.onended = function() {
     speech_playing = false;
@@ -633,7 +660,10 @@ async function play_tts(speech) {
       speech = await get_translation(inputLang, outputLang, speech.join(" "));
       speech = speech.split(" ");
     }
-    console.log(speech.join(" "));
+    // Remove empty strings
+    speech = speech.filter(function(el) { return el; });
+
+    console.log("Speech: " + speech.join(" "));
     speech = speech.join("-");
     if (speech === "") {
       return;
@@ -665,9 +695,8 @@ async function play_buffered_tts(speech, split=true) {
 async function play_interim_tts(interim_speech) {
   //~console.log("interim tts");
   interim_speech = interim_speech.split(" ");
-  if (interim_speech[0] !== "") {
-    interim_speech.unshift("");
-  }
+  // Remove empty strings
+  interim_speech = interim_speech.filter(function(el) { return el; });
   console.log(interim_speech);
   if (interim_speech.length < interim_speech_index) {
     interim_speech_index = 0;
