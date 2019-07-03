@@ -16,8 +16,6 @@ const outputConfidence = document.querySelector('label#outputConfidence');
 const testButtonInfo = document.querySelector('p#testButtonInfo');
 const testButton = document.querySelector('button#testButton');
 const outputVoiceText = document.querySelector('p#outputVoiceText');
-//const optionsButton = document.querySelector('button#optionsButton');
-//const transcriptButton = document.querySelector('button#transcriptButton');
 const optionsButton = $('button#optionsButton');
 const transcriptButton = $('input#transcript-checkbox');
 const confidenceButton = $('input#confidence-checkbox');
@@ -663,7 +661,11 @@ async function play_tts(speech) {
     // Remove empty strings
     speech = speech.filter(function(el) { return el; });
 
-    console.log("Speech: " + speech.join(" "));
+    speech_text = speech.join(" ");
+    console.log("Speech: " + speech_text);
+    // UPDATE LATER ###############
+    // ADD TIMESTAMP, REMOVE DUPLICATE ARG
+    transcript.textContent += `${speech_text}. `;
     speech = speech.join("-");
     if (speech === "") {
       return;
@@ -799,9 +801,6 @@ function testSpeech() {
         } else {
           socket.emit('speech', speechResult);
           play_interim_tts(speechResult);
-          // UPDATE LATER ###############
-          // ADD TIMESTAMP, REMOVE DUPLICATE ARG
-          transcript.textContent += speechResult;
         }
         diagnosticPara.textContent = 'Speech received: ' + speechResult;
         outputConfidence.textContent = 'Confidence: ' + confidenceResult;
@@ -816,9 +815,6 @@ function testSpeech() {
         } else {
           socket.emit('speech', speechResult);
           play_buffered_tts(speechResult, split=true);
-          // UPDATE LATER ###############
-          // ADD TIMESTAMP, REMOVE DUPLICATE ARG
-          transcript.textContent += `${speechResult}. `;
         }
         diagnosticPara.textContent = 'Speech received: ' + speechResult;
         outputConfidence.textContent = 'Confidence: ' + confidenceResult;
