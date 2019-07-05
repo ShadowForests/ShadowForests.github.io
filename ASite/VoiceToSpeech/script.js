@@ -666,16 +666,14 @@ audioInputSelect.onchange = function() {
 }
 */
 
-/*
 function restartSpeech() {
   recognition = new SpeechRecognition();
   testSpeech();
 }
 
-langInputSelect.onchange = restartSpeech;
-*/
-
 audioOutputSelect.onchange = changeAudioDestination;
+//langInputSelect.onchange = restartSpeech;
+
 
 //
 
