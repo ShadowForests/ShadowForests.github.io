@@ -21,19 +21,18 @@
 
   <body>
     <div class="absolute-top">
-      <h1 class="main-h1">Voice To Speech</h1>
-      <p id="testButtonInfo" class="bottom-margin">Press start to begin speech recognition.</p>
+      <h1 class="main-h1 unselectable" unselectable="on">Voice To Speech</h1>
+      <p id="testButtonInfo" class="bottom-margin unselectable" unselectable="on">Press start to begin speech recognition.</p>
 
-      <div class="center bottom-margin">
+      <div class="center bottom-margin unselectable" unselectable="on">
         <button id="testButton" class="btn center">Start</button>
         <button id="optionsButton" class="btn btn-square"><i class="cog icon img-centered"></i></button>
       </div>
 
-      <div id="transcript" class="scroller ui raised segment transcript options">
-      </div>
+      <div id="transcript" class="scroller ui raised segment transcript options"></div>
     </div>
 
-    <div class="absolute-bottom">
+    <div class="absolute-bottom unselectable" unselectable="on">
       <div class="ui small modal options-modal">
         <i class="close icon"></i>
         <div class="header">

@@ -570,6 +570,7 @@ select {
   top: 0;
   right: 0;
   left: 0;
+  height: calc(100% - 91px);
 }
 
 .absolute-bottom {
@@ -600,11 +601,63 @@ select {
 }
 
 .transcript {
+  display: none;
   margin: 0 auto !important;
-  margin-bottom: 100px !important;
   width: 80%;
-  height: 150px;
+  height: 250px;
   text-align: left;
   word-wrap: break-word;
   overflow: auto;
+  padding: 10px !important;
+  resize: vertical;
+  max-height: calc(100% - 250px);
+}
+
+.transcript-body, .transcript-body > div {
+  align-items: baseline;
+  box-sizing: border-box;
+  font-family: Roboto, Arial, sans-serif;
+  flex-direction: row;
+  justify-content: normal;
+  overflow-wrap: break-word;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  margin-top: 1px;
+  margin-bottom: 1px;
+}
+
+.transcript-time {
+  font-size: 10px;
+  width: 60px;
+  color: gray;
+  float: left;
+  margin-left: 5px;
+}
+
+.transcript-text {
+  vertical-align: center;
+  width: calc(100% - 100px);
+  float: left;
+}
+
+.transcript-link {
+  display: none;
+}
+
+.transcript-play {
+  font-size: 12px;
+  color: gray;
+  float: right;
+  cursor: pointer;
+  display: none;
+  padding-bottom: 0px;
+  margin-bottom: 0px;
+}
+
+*.unselectable {
+  -moz-user-select: -moz-none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -o-user-select: none;
+  user-select: none;
 }
