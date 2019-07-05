@@ -504,6 +504,10 @@ select {
   padding-bottom: 5px;
 }
 
+.options-modal, .options-modal > div {
+  font-family: 'Open Sans',arial,sans-serif !important;
+}
+
 .credit-text {
   text-align: right;
   color: gray;
@@ -550,7 +554,6 @@ select {
   white-space: nowrap;
   padding-top: 2.0px;
   text-overflow: clip;
-  font-family: 'Open Sans',arial,sans-serif;
 }
 
 .text {
@@ -561,7 +564,6 @@ select {
   padding-top: 2.0px;
   padding-bottom: 2.0px;
   text-overflow: clip;
-  font-family: 'Open Sans',arial,sans-serif;
 }
 
 .absolute-top {

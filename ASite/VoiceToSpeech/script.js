@@ -367,6 +367,7 @@ $('.volume-slider').mouseleave(function() {
 });
 
 optionsButton.click(function() {
+  navigator.mediaDevices.enumerateDevices().then(gotDevices).catch(handleError);
   $('.ui.modal.options-modal')
     .modal({
       autofocus: false,
@@ -665,13 +666,16 @@ audioInputSelect.onchange = function() {
 }
 */
 
+/*
 function restartSpeech() {
   recognition = new SpeechRecognition();
   testSpeech();
 }
 
-audioOutputSelect.onchange = changeAudioDestination;
 langInputSelect.onchange = restartSpeech;
+*/
+
+audioOutputSelect.onchange = changeAudioDestination;
 
 //
 
