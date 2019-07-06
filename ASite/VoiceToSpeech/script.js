@@ -47,6 +47,22 @@ async function triggerMicrophone() {
   await recognition.stop();
 }
 
+// Languages that don't use spaces for dividing words
+// chinese, japanaese, indonesian, thai, javanese, khmer, lao, burmese, sundanese, vietnamese, tibetan, dzongkha, tai lu
+var non_spaced_langs = [
+  ["km-KH", "Khmer (Cambodia)", "ភាសាខ្មែរ (កម្ពុជា)"],
+  ["lo-LA", "Lao (Laos)", "ລາວ (ລາວ)"],
+  ["jv-ID", "Javanese (Indonesia)", "Jawa (Indonesia)"],
+  ["su-ID", "Sundanese (Indonesia)", "Urang (Indonesia)"],
+  ["th-TH", "Thai (Thailand)", "ไทย (ประเทศไทย)"],
+  ["vi-VN", "Vietnamese (Vietnam)", "Tiếng Việt (Việt Nam)"],
+  ["zh-TW", "Chinese, Mandarin (Traditional, Taiwan)", "國語 (台灣)"],
+  ["yue-Hant-HK", "Chinese, Cantonese (Traditional, Hong Kong)", "廣東話 (香港)"],
+  ["ja-JP", "Japanese (Japan)", "日本語（日本）"],
+  ["zh-HK", "Chinese, Mandarin (Simplified, Hong Kong)", "普通話 (香港)"],
+  ["zh", "Chinese, Mandarin (Simplified, China)", "普通话 (中国大陆)"],
+]
+
 // If you modify this array, also update default language / dialect below
 var input_langs = [
   ["af-ZA", "Afrikaans (South Africa)", "Afrikaans (Suid-Afrika)"],
@@ -385,11 +401,10 @@ optionsButton.click(function() {
   ;
 });
 
-var transcriptToggled = false;
 transcriptButton.click(function() {
   if (transcriptButton.prop("checked")) {
     transcript.style.display = "block";
-    transcriptToggled = true;
+    scrollTranscript();
   } else {
     transcript.style.display = "none";
   }
@@ -425,8 +440,9 @@ translateButton.click(function() {
   }
 });
 
-transcript.scrollTop = transcript.scrollHeight - transcript.clientHeight;
-transcriptToggled = false;
+function scrollTranscript() {
+  transcript.scrollTop = transcript.scrollHeight - transcript.clientHeight;
+}
 
 function checkTime(i) {
   if (i < 10) {
@@ -478,9 +494,8 @@ function appendTranscript(text, link) {
   transcript.appendChild(transcriptBody);
 
   // scroll to bottom if isScrolledToBottom is true
-  if (isScrolledToBottom || transcriptToggled) {
-    transcript.scrollTop = transcript.scrollHeight - transcript.clientHeight;
-    transcriptToggled = false;
+  if (isScrolledToBottom) {
+    scrollTranscript();
   }
 
   // Add hover effects
@@ -672,8 +687,7 @@ function restartSpeech() {
 }
 
 audioOutputSelect.onchange = changeAudioDestination;
-//langInputSelect.onchange = restartSpeech;
-
+langInputSelect.onchange = restartSpeech;
 
 //
 
@@ -778,9 +792,6 @@ async function playTTS(speech) {
   }
 }
 
-var last_interim_speech = [];
-var interim_speech_index = 0;
-
 async function playBufferedTTS(speech, split=true) {
   if (split) {
     speech = speech.split(" ");
@@ -793,23 +804,46 @@ async function playBufferedTTS(speech, split=true) {
   playTTS(speech_buffer.shift());
 }
 
-async function playInterimTTS(interim_speech) {
-  //~console.log("interim tts");
-  interim_speech = interim_speech.split(" ");
-  // Remove empty strings
-  interim_speech = interim_speech.filter(function(el) { return el; });
-  console.log(interim_speech);
-  if (interim_speech.length < interim_speech_index) {
-    interim_speech_index = 0;
+// intspeech = interim_speech
+var last_intspeech_list = [];
+var intspeech_index = 0;
+var last_intspeech = "";
+var intspeech_length = 0;
+
+async function playInterimTTS(intspeech) {
+  intspeech = intspeech.trim();
+  let intspeech_list = intspeech.split(" ");
+  //~console.log(intspeech_list);
+
+  // Reset if intspeech was cleared out
+  if (intspeech_list.length === 0) {
+    intspeech_index = 0;
+    intspeech_length = 0;
   }
-  var curr_interim_speech_index = interim_speech_index;
-  last_interim_speech = interim_speech;
+
+  // Validate based on spacing
+  // Store the index of new appended speech in the list
+  let curr_intspeech_index = intspeech_index;
+  last_intspeech_list = intspeech_list;
+
+  // Validate based on length
+  // Store the length of new appended speech in the string
+  let curr_intspeech_length = intspeech_length;
+  last_intspeech = intspeech;
+
+  // Wait a predefined time to check for silence before speaking interim speech
   await wait(interim_wait);
-  //~console.log("RUNNUNG");
-  if (last_interim_speech == interim_speech) {
-    let interim_speech_length = interim_speech.length;
-    playBufferedTTS(interim_speech.splice(curr_interim_speech_index), split=false);
-    interim_speech_index = interim_speech_length;
+
+  // If the interim speech did not change after the wait, there was enough silence to begin speaking
+  if (last_intspeech_list === intspeech_list) {
+    if (intspeech_index < intspeech_list.length) {
+      intspeech_index = intspeech_list.length;
+      intspeech_length = intspeech.length;
+      playBufferedTTS(intspeech_list.splice(curr_intspeech_index), split=false);
+    } else if (intspeech_length < intspeech.length) {
+      intspeech_length = intspeech.length;
+      playBufferedTTS(intspeech.slice(curr_intspeech_length), split=true);
+    }
   }
 }
 
@@ -845,8 +879,8 @@ function testSpeech() {
     recognition.start();
   } catch (err) {}
 
-  // Reset interim_speech_index on starts
-  interim_speech_index = 0;
+  // Reset intspeech_index on starts
+  intspeech_index = 0;
 
   recognition.onresult = function(event) {
     console.log('SpeechRecognition.onresult');
@@ -869,9 +903,9 @@ function testSpeech() {
     if (lowlatency) {
       var interim_transcript = '';
 
-      // Initially interim_speech_index is set to 0 on start
-      // interim_transcript is reset to length 1 during silence, which resets interim_speech_index to 1
-      // Any words will increase the index to 2 and above
+      // Initially intspeech_index is set to 0 on start
+      // interim_transcript is reset to length 0 during silence, which resets intspeech_index to 0
+      // Any words will increase the index to 1 and above
       // This ensures words will not be missed when being read
       for (var i = event.resultIndex; i < event.results.length; ++i) {
         if (event.results[i].isFinal) {
