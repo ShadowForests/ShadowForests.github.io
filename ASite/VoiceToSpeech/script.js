@@ -189,11 +189,11 @@ var input_langs = [
 
 var output_langs = [
   ["af-ZA", "Afrikaans (South Africa)", "Afrikaans (Suid-Afrika)"],
-  ["am-ET", "Amharic (Ethiopia)", "አማርኛ (ኢትዮጵያ)"],
+  //~["am-ET", "Amharic (Ethiopia)", "አማርኛ (ኢትዮጵያ)"],
   ["hy-AM", "Armenian (Armenia)", "Հայ (Հայաստան)"],
-  ["az-AZ", "Azerbaijani (Azerbaijan)", "Azərbaycan (Azərbaycan)"],
+  //~["az-AZ", "Azerbaijani (Azerbaijan)", "Azərbaycan (Azərbaycan)"],
   ["id-ID", "Indonesian (Indonesia)", "Bahasa Indonesia (Indonesia)"],
-  ["ms-MY", "Malay (Malaysia)", "Bahasa Melayu (Malaysia)"],
+  //~["ms-MY", "Malay (Malaysia)", "Bahasa Melayu (Malaysia)"],
   ["bn-BD", "Bengali (Bangladesh)", "বাংলা (বাংলাদেশ)"],
   ["bn-IN", "Bengali (India)", "বাংলা (ভারত)"],
   ["ca-ES", "Catalan (Spain)", "Català (Espanya)"],
@@ -210,19 +210,19 @@ var output_langs = [
   ["fil-PH", "Filipino (Philippines)", "Filipino (Pilipinas)"],
   ["fr-CA", "French (Canada)", "Français (Canada)"],
   ["fr-FR", "French (France)", "Français (France)"],
-  ["gl-ES", "Galician (Spain)", "Galego (España)"],
-  ["ka-GE", "Georgian (Georgia)", "ქართული (საქართველო)"],
-  ["gu-IN", "Gujarati (India)", "ગુજરાતી (ભારત)"],
+  //~["gl-ES", "Galician (Spain)", "Galego (España)"],
+  //~["ka-GE", "Georgian (Georgia)", "ქართული (საქართველო)"],
+  //~["gu-IN", "Gujarati (India)", "ગુજરાતી (ભારત)"],
   ["hr-HR", "Croatian (Croatia)", "Hrvatski (Hrvatska)"],
-  ["zu-ZA", "Zulu (South Africa)", "IsiZulu (Ningizimu Afrika)"],
+  //~["zu-ZA", "Zulu (South Africa)", "IsiZulu (Ningizimu Afrika)"],
   ["is-IS", "Icelandic (Iceland)", "Íslenska (Ísland)"],
   ["it-IT", "Italian (Italy)", "Italiano (Italia)"],
   ["jv-ID", "Javanese (Indonesia)", "Jawa (Indonesia)"],
-  ["kn-IN", "Kannada (India)", "ಕನ್ನಡ (ಭಾರತ)"],
+  //~["kn-IN", "Kannada (India)", "ಕನ್ನಡ (ಭಾರತ)"],
   ["km-KH", "Khmer (Cambodia)", "ភាសាខ្មែរ (កម្ពុជា)"],
-  ["lo-LA", "Lao (Laos)", "ລາວ (ລາວ)"],
+  //~["lo-LA", "Lao (Laos)", "ລາວ (ລາວ)"],
   ["lv-LV", "Latvian (Latvia)", "Latviešu (latviešu)"],
-  ["lt-LT", "Lithuanian (Lithuania)", "Lietuvių (Lietuva)"],
+  //~["lt-LT", "Lithuanian (Lithuania)", "Lietuvių (Lietuva)"],
   ["hu-HU", "Hungarian (Hungary)", "Magyar (Magyarország)"],
   ["ml-IN", "Malayalam (India)", "മലയാളം (ഇന്ത്യ)"],
   ["mr-IN", "Marathi (India)", "मराठी (भारत)"],
@@ -235,7 +235,7 @@ var output_langs = [
   ["ro-RO", "Romanian (Romania)", "Română (România)"],
   ["si-LK", "Sinhala (Sri Lanka)", "සිංහල (ශ්රී ලංකාව)"],
   ["sk-SK", "Slovak (Slovakia)", "Slovenčina (Slovensko)"],
-  ["sl-SI", "Slovenian (Slovenia)", "Slovenščina (Slovenija)"],
+  //~["sl-SI", "Slovenian (Slovenia)", "Slovenščina (Slovenija)"],
   ["su-ID", "Sundanese (Indonesia)", "Urang (Indonesia)"],
   ["sw-TZ", "Swahili (Tanzania)", "Swahili (Tanzania)"],
   ["fi-FI", "Finnish (Finland)", "Suomi (Suomi)"],
@@ -245,12 +245,12 @@ var output_langs = [
   ["vi-VN", "Vietnamese (Vietnam)", "Tiếng Việt (Việt Nam)"],
   ["tr-TR", "Turkish (Turkey)", "Türkçe (Türkiye)"],
   ["el-GR", "Greek (Greece)", "Ελληνικά (Ελλάδα)"],
-  ["bg-BG", "Bulgarian (Bulgaria)", "Български (България)"],
+  //~["bg-BG", "Bulgarian (Bulgaria)", "Български (България)"],
   ["ru-RU", "Russian (Russia)", "Русский (Россия)"],
   ["sr-RS", "Serbian (Serbia)", "Српски (Србија)"],
   ["uk-UA", "Ukrainian (Ukraine)", "Українська (Україна)"],
   ["ar-SA", "Arabic (Saudi Arabia)", "العربية (السعودية)"],
-  ["fa-IR", "Persian (Iran)", "فارسی (ایران)"],
+  //~["fa-IR", "Persian (Iran)", "فارسی (ایران)"],
   ["hi-IN", "Hindi (India)", "हिन्दी (भारत)"],
   ["th-TH", "Thai (Thailand)", "ไทย (ประเทศไทย)"],
   ["ko-KR", "Korean (South Korea)", "한국어 (대한민국)"],
@@ -300,7 +300,7 @@ gotLanguages(input_langs, output_langs);
 
 // Set default lang selections
 langInputSelect.selectedIndex = 45;
-langOutputSelect.selectedIndex = 20;
+langOutputSelect.selectedIndex = 17;
 
 function getInputLang() {
   return langInputSelect.options[langInputSelect.selectedIndex].value;
@@ -308,6 +308,16 @@ function getInputLang() {
 
 function getOutputLang() {
   return langOutputSelect.options[langOutputSelect.selectedIndex].value;
+}
+
+function isSpacedLang(lang) {
+  for (let non_spaced_lang in non_spaced_langs) {
+    non_spaced_lang = non_spaced_langs[non_spaced_lang][0];
+    if (lang === non_spaced_lang) {
+      return false;
+    }
+  }
+  return true;
 }
 
 // Set default language / dialect
@@ -762,14 +772,14 @@ async function playTTS(speech) {
   }
   try {
     //~console.log("try playTTS");
-    let inputLang = getInputLang();
-    let outputLang = getOutputLang();
+    let input_lang = getInputLang();
+    let output_lang = getOutputLang();
     /* Using native speech synthesis
     speechSynthesis.speak(new SpeechSynthesisUtterance(speech.join(" ")));
     return;
     */
     if (translate) {
-      speech = await getTranslation(inputLang, outputLang, speech.join(" "));
+      speech = await getTranslation(input_lang, output_lang, speech.join(" "));
       speech = speech.split(" ");
     }
     // Remove empty strings
@@ -782,7 +792,7 @@ async function playTTS(speech) {
     if (speech === "") {
       return;
     }
-    let audio_url = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=${outputLang}&q=${speech}`;
+    let audio_url = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=${output_lang}&q=${speech}`;
     appendTranscript(speech_text, audio_url);
     playAudio(audio_url);
   } catch (err) {
@@ -810,21 +820,36 @@ var intspeech_index = 0;
 var last_intspeech = "";
 var intspeech_length = 0;
 
-async function playInterimTTS(intspeech) {
-  intspeech = intspeech.trim();
+async function playSpacedLangTTS(intspeech) {
   let intspeech_list = intspeech.split(" ");
-  //~console.log(intspeech_list);
+  // Remove empty strings
+  intspeech_list = intspeech_list.filter(function(el) { return el; });
 
   // Reset if intspeech was cleared out
   if (intspeech_list.length === 0) {
     intspeech_index = 0;
-    intspeech_length = 0;
   }
 
   // Validate based on spacing
   // Store the index of new appended speech in the list
   let curr_intspeech_index = intspeech_index;
   last_intspeech_list = intspeech_list;
+
+  // Wait a predefined time to check for silence before speaking interim speech
+  await wait(interim_wait);
+
+  // If the interim speech did not change after the wait, there was enough silence to begin speaking
+  if (last_intspeech_list === intspeech_list) {
+    intspeech_index = intspeech_list.length;
+    playBufferedTTS(intspeech_list.splice(curr_intspeech_index), split=false);
+  }
+}
+
+async function playNonSpacedLangTTS(intspeech) {
+  // Reset if intspeech was cleared out
+  if (intspeech.length === 0) {
+    intspeech_length = 0;
+  }
 
   // Validate based on length
   // Store the length of new appended speech in the string
@@ -835,15 +860,22 @@ async function playInterimTTS(intspeech) {
   await wait(interim_wait);
 
   // If the interim speech did not change after the wait, there was enough silence to begin speaking
-  if (last_intspeech_list === intspeech_list) {
-    if (intspeech_index < intspeech_list.length) {
-      intspeech_index = intspeech_list.length;
-      intspeech_length = intspeech.length;
-      playBufferedTTS(intspeech_list.splice(curr_intspeech_index), split=false);
-    } else if (intspeech_length < intspeech.length) {
-      intspeech_length = intspeech.length;
-      playBufferedTTS(intspeech.slice(curr_intspeech_length), split=true);
-    }
+  if (last_intspeech === intspeech && intspeech_length < intspeech.length) {
+    intspeech_length = intspeech.length;
+    playBufferedTTS(intspeech.slice(curr_intspeech_length), split=true);
+  }
+
+}
+
+async function playInterimTTS(intspeech) {
+  intspeech = intspeech.trim();
+  //~console.log(intspeech);
+
+  // Check for validation type
+  if (isSpacedLang(getInputLang())) {
+    playSpacedLangTTS(intspeech);
+  } else {
+    playNonSpacedLangTTS(intspeech);
   }
 }
 
@@ -879,8 +911,9 @@ function testSpeech() {
     recognition.start();
   } catch (err) {}
 
-  // Reset intspeech_index on starts
+  // Reset intspeech_index and intspeech_length on start
   intspeech_index = 0;
+  intspeech_length = 0;
 
   recognition.onresult = function(event) {
     console.log('SpeechRecognition.onresult');
