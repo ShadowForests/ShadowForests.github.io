@@ -750,3 +750,16 @@ select {
 .volume-icon {
   margin-top: 11.5px !important;
 }
+
+.bottom-margin-media {
+  color: rgb(249, 250, 251);
+  -webkit-transition: color 0.15s;
+}
+
+.bottom-margin-media:hover {
+  color: gray;
+}
+
+.extra-text {
+  color: gray !important;
+}
