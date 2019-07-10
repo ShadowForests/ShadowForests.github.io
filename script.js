@@ -2,7 +2,22 @@ var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
 var SpeechGrammarList = SpeechGrammarList || webkitSpeechGrammarList;
 var SpeechRecognitionEvent = SpeechRecognitionEvent || webkitSpeechRecognitionEvent;
 
+/*
 // Setup
+$(document).ready(function(){
+ 
+ 
+ $('#gspeech').on('click', function(){
+        
+        var text = $('input[name="text"]').val();
+        responsiveVoice.speak("" + text +"", "Korean Male");
+        <!--  http://responsivevoice.org/ -->
+    });
+   
+
+});
+*/
+// https://code.responsivevoice.org/getvoice.php?t=potato&client=tw-ob&sv=g1&vn=&pitch=0.5&rate=0.5&vol=1&tl=en-US&gender=female
 
 var socket = io.connect('http://localhost:3000');
 
@@ -12,16 +27,17 @@ socket.on('connect_error', () => {
 });
 
 const diagnosticPara = document.querySelector('label#outputDiag');
-const outputConfidence = document.querySelector('label#outputConfidence');
+const diagnostics = document.querySelector('p#diagnostics');
 const testButtonInfo = document.querySelector('p#testButtonInfo');
 const testButton = document.querySelector('button#testButton');
 const outputVoiceText = document.querySelector('p#outputVoiceText');
 const optionsButton = $('button#optionsButton');
 const transcriptButton = $('input#transcript-checkbox');
-const confidenceButton = $('input#confidence-checkbox');
+const diagnosticsButton = $('input#diagnostics-checkbox');
 const lowlatencyButton = $('input#lowlatency-checkbox');
 const translateButton = $('input#translate-checkbox');
 const options = document.querySelector('div#options');
+const transcriptFrame = document.querySelector('div#transcript-frame');
 const transcript = document.querySelector('div#transcript');
 const audioInputSelect = document.querySelector('select#audioSource');
 const audioOutputSelect = document.querySelector('select#audioOutput');
@@ -30,12 +46,19 @@ const langInputSelect = document.querySelector('select#searchSelectInput');
 const langOutputSelect = document.querySelector('select#searchSelectOutput');
 const langSelectors = [audioInputSelect, audioOutputSelect];
 
+const volumeSlider = $('#volume-slider');
+const volumeFill = $('#volume-fill');
+const volumeThumb = $('#volume-thumb');
+const pitchSlider = $('#pitch-slider');
+const pitchThumb = $('#pitch-thumb');
+const rateSlider = $('#rate-slider');
+const rateThumb = $('#rate-thumb');
+
 var buttonState = 0;
 const interim_wait = 300;
 const audio_input_selection_disabled = true;
 var lowlatency = lowlatencyButton.prop("checked");
 var translate = translateButton.prop("checked");
-var volume = 100;
 var audio = new Audio();
 
 var recognition = new SpeechRecognition();
@@ -260,6 +283,127 @@ var output_langs = [
   ["zh", "Chinese, Mandarin (Simplified, China)", "普通话 (中国大陆)"],
 ]
 
+var rv_langs = [
+  ["en-GB&gender=female", "English UK Female"],
+  ["en-GB&gender=male", "English UK Male"],
+  ["en-US&gender=female", "English US Female"],
+  ["en-US&gender=male", "English US Male"],
+  ["ar-SA&gender=male", "Arabic Male"],
+  ["ar-SA&gender=female", "Arabic Female"],
+  ["hy-AM&gender=male", "Armenian Male"],
+  ["en-AU&gender=female", "Australian Female"],
+  ["en-AU&gender=male", "Australian Male"],
+  ["bn-BD&gender=female", "Bangla Bangladesh Female"],
+  ["bn-BD&gender=male", "Bangla Bangladesh Male"],
+  ["bn-IN&gender=female", "Bangla India Female"],
+  ["bn-IN&gender=male", "Bangla India Male"],
+  ["pt-BR&gender=female", "Brazilian Portuguese Female"],
+  ["pt-BR&gender=male", "Brazilian Portuguese Male"],
+  ["zh&gender=female", "Chinese Female"],
+  ["zh&gender=male", "Chinese Male"],
+  ["zh-HK&gender=female", "Chinese (Hong Kong) Female"],
+  ["zh-HK&gender=male", "Chinese (Hong Kong) Male"],
+  ["zh-TW&gender=female", "Chinese Taiwan Female"],
+  ["zh-TW&gender=male", "Chinese Taiwan Male"],
+  ['cs-CZ&gender=female', 'Czech Female'],
+  ['cs-CZ&gender=male', 'Czech Male'],
+  ['da-DK&gender=female', 'Danish Female'],
+  ['da-DK&gender=male', 'Danish Male'],
+  ['de-DE&gender=female', 'Deutsch Female'],
+  ['de-DE&gender=male', 'Deutsch Male'],
+  ['nl-NL&gender=female', 'Dutch Female'],
+  ['nl-NL&gender=male', 'Dutch Male'],
+  ['et&gender=male', 'Estonian Male'],
+  ['fil-PH&gender=female', 'Filipino Female'],
+  ['fi-FI&gender=female', 'Finnish Female'],
+  ['fi-FI&gender=male', 'Finnish Male'],
+  ['fr-CA&gender=female', 'French Female'],
+  ['fr-CA&gender=male', 'French Male'],
+  ['fr-CA&gender=female', 'French Canadian Female'],
+  ['fr-CA&gender=male', 'French Canadian Male'],
+  ['el-GR&gender=female', 'Greek Female'],
+  ['el-GR&gender=male', 'Greek Male'],
+  ['hi-IN&gender=female', 'Hindi Female'],
+  ['hi-IN&gender=male', 'Hindi Male'],
+  ['hu-HU&gender=female', 'Hungarian Female'],
+  ['hu-HU&gender=male', 'Hungarian Male'],
+  ['id-ID&gender=female', 'Indonesian Female'],
+  ['id-ID&gender=male', 'Indonesian Male'],
+  ['it-IT&gender=female', 'Italian Female'],
+  ['it-IT&gender=male', 'Italian Male'],
+  ['ja-JP&gender=female', 'Japanese Female'],
+  ['ja-JP&gender=male', 'Japanese Male'],
+  ['ko-KR&gender=female', 'Korean Female'],
+  ['ko-KR&gender=male', 'Korean Male'],
+  ['la&gender=male', 'Latin Male'],
+  ['ne-NP&gender=female', 'Nepali'],
+  ['nb-NO&gender=female', 'Norwegian Female'],
+  ['nb-NO&gender=male', 'Norwegian Male'],
+  ['pl-PL&gender=female', 'Polish Female'],
+  ['pl-PL&gender=male', 'Polish Male'],
+  ['pt-BR&gender=female', 'Portuguese Female'],
+  ['pt-BR&gender=male', 'Portuguese Male'],
+  ['ro-RO&gender=female', 'Romanian Female'],
+  ['ru-RU&gender=female', 'Russian Female'],
+  ['ru-RU&gender=male', 'Russian Male'],
+  ['si-LK&gender=female', 'Sinhala'],
+  ['sk-SK&gender=female', 'Slovak Female'],
+  ['sk-SK&gender=male', 'Slovak Male'],
+  ['es-ES&gender=female', 'Spanish Female'],
+  ['es-ES&gender=male', 'Spanish Male'],
+  ['es-US&gender=female', 'Spanish Latin American Female'],
+  ['es-US&gender=male', 'Spanish Latin American Male'],
+  ['sv-SE&gender=female', 'Swedish Female'],
+  ['sv-SE&gender=male', 'Swedish Male'],
+  ['ta-IN&gender=female', 'Tamil Female'],
+  ['ta-IN&gender=male', 'Tamil Male'],
+  ['th-TH&gender=female', 'Thai Female'],
+  ['th-TH&gender=male', 'Thai Male'],
+  ['tr-TR&gender=female', 'Turkish Female'],
+  ['tr-TR&gender=male', 'Turkish Male'],
+  ['uk-UA&gender=female', 'Ukrainian Female'],
+  ['vi-VN&gender=female', 'Vietnamese Female'],
+  ['vi-VN&gender=male', 'Vietnamese Male'],
+  ['af-ZA&gender=male', 'Afrikaans Male'],
+  ['sq&gender=male', 'Albanian Male'],
+  ['sr-BA&gender=male', 'Bosnian Male'],
+  ['ca-ES&gender=male', 'Catalan Male'],
+  ['hr-HR&gender=male', 'Croatian Male'],
+  ['eo&gender=male', 'Esperanto Male'],
+  ['is-IS&gender=male', 'Icelandic Male'],
+  ['lv-LV&gender=male', 'Latvian Male'],
+  ['mk&gender=male', 'Macedonian Male'],
+  ['sr-RS&gender=male', 'Serbian Male'],
+  ['hr-HR&gender=male', 'Serbo-Croatian Male'],
+  ['sw-TZ&gender=male', 'Swahili Male'],
+  ['cy&gender=male', 'Welsh Male'],
+]
+
+var builtin_lang_mapping = { 
+  "Microsoft David Desktop - English (United States)": ["English (United States) [Microsoft David Desktop]", "English (United States) [Microsoft David Desktop]"],
+  "Microsoft Mark Desktop - English (United States)": ["English (United States) [Microsoft Mark Desktop]", "English (United States) [Microsoft Mark Desktop]"],
+  "Microsoft Zira Desktop - English (United States)": ["English (United States) [Microsoft Zira Desktop]", "English (United States) [Microsoft Zira Desktop]"],
+  "Google Deutsch": ["German (Germany) [Google]", "Deutsch (Deutschland) [Google]"],
+  "Google US English": ["English (US) [Google]", "English (US) [Google]"],
+  "Google UK English Female": ["English (UK Female) [Google]", "English (UK Female) [Google]"],
+  "Google UK English Male": ["English (UK Male) [Google]", "English (UK Male) [Google]"],
+  "Google español": ["Spanish (Spain) [Google]", "Español (España) [Google]"],
+  "Google español de Estados Unidos": ["Spanish (United States) [Google]", "Español (Estados Unidos) [Google]"],
+  "Google français": ["French (France) [Google]", "Français (France) [Google]"],
+  "Google हिन्दी": ["Hindi (India) [Google]", "हिन्दी (भारत) [Google]"],
+  "Google Bahasa Indonesia": ["Indonesian (Indonesia) [Google]", "Bahasa Indonesia (Indonesia) [Google]"],
+  "Google italiano": ["Italian (Italy) [Google]", "Italiano (Italia) [Google]"],
+  "Google 日本語": ["Japanese (Japan) [Google]", "日本語（日本）[Google]"],
+  "Google 한국의": ["Korean (South Korea) [Google]", "한국어 (대한민국) [Google]"],
+  "Google Nederlands": ["Dutch (Netherlands) [Google]", "Nederlands (Nederland) [Google]"],
+  "Google polski": ["Polish (Poland) [Google]", "Polski (Polska) [Google]"],
+  "Google português do Brasil": ["Portuguese (Brazil) [Google]", "Português (Brasil) [Google]"],
+  "Google русский": ["Russian (Russia) [Google]", "Русский (Россия) [Google]"],
+  "Google 普通话（中国大陆）": ["Chinese, Mandarin (Simplified, China) [Google]", "普通话 (中国大陆) [Google]"],
+  "Google 粤語（香港）": ["Chinese, Cantonese (Traditional, Hong Kong) [Google]", "廣東話 (香港) [Google]"],
+  "Google 國語（臺灣）": ["Chinese, Mandarin (Traditional, Taiwan) [Google]", "國語 (台灣) [Google]"],
+}
+
 // Sort alphabetical by English name
 input_langs.sort(function(a, b) {
     var keyA = a[1],
@@ -280,33 +424,99 @@ output_langs.sort(function(a, b) {
 });
 
 // Fill languages
-
 function gotLanguages(input_langs, output_langs) {
-  for (let i = 0; i !== input_langs.length; ++i) {
+  // Input Languages
+  for (let i = 0; i < input_langs.length; ++i) {
     const option = document.createElement('option');
     option.value = input_langs[i][0];
     option.text = input_langs[i][1];
     langInputSelect.appendChild(option);
   }
-  for (let i = 0; i !== output_langs.length; ++i) {
-    const option = document.createElement('option');
+
+  // Output
+  // Header
+  var header1 = document.createElement('option');
+  header1.value = 'header';
+  //header1.text = "🔊 Built-in Voices"
+  header1.text = "🔊 Voice Set A [Special]"
+  langOutputSelect.appendChild(header1);
+
+  /*
+  // Speech Synthesis Voices
+  var voices = speechSynthesis.getVoices();
+  for(i = 0; i < voices.length ; i++) {
+    var option = document.createElement('option');
+    option.textContent = voices[i].name + ' (' + voices[i].lang + ')';
+    option.value = `ss-${i}:${voices[i].lang}`;
+    option.text = voices[i].name;
+    try {
+      // Remap name
+      option.text = builtin_lang_mapping[option.text][0];
+    } catch (err) {}
+    langOutputSelect.appendChild(option);
+  }
+  delete speechSynthesis.onvoiceschanged;
+  */
+
+  // Voice Set A
+  for(let i = 0; i < rv_langs.length; i++) {
+    var option = document.createElement('option');
+    option.value = rv_langs[i][0];
+    option.text = rv_langs[i][1];
+    langOutputSelect.appendChild(option);
+  }
+
+  // Divider
+  var divider = document.createElement('option');
+  divider.value = 'divider';
+  divider.text = ""
+  langOutputSelect.appendChild(divider);
+
+  // Header
+  var header2 = document.createElement('option');
+  header2.value = 'header';
+  //header2.text = "🔊 Language Voices"
+  header2.text = "🔊 Voice Set B [Normal]"
+  langOutputSelect.appendChild(header2);
+
+  // Output Languages
+  for (let i = 0; i < output_langs.length; ++i) {
+    var option = document.createElement('option');
     option.value = output_langs[i][0];
     option.text = output_langs[i][1];
     langOutputSelect.appendChild(option);
   }
+
+  // Set default lang selections
+  langInputSelect.selectedIndex = 45;
+  //langOutputSelect.selectedIndex = voices.length + 3 + 17; // 3 = divider + headers
+  langOutputSelect.selectedIndex = rv_langs.length + 3 + 17; // 3 = divider + headers
 }
 
-gotLanguages(input_langs, output_langs);
+function fillLanguages() {
+  gotLanguages(input_langs, output_langs);
+}
 
-// Set default lang selections
-langInputSelect.selectedIndex = 45;
-langOutputSelect.selectedIndex = 17;
+fillLanguages();
+/*
+speechSynthesis.onvoiceschanged = fillLanguages;
+*/
+
+//gotLanguages(input_langs, output_langs);
 
 function getInputLang() {
   return langInputSelect.options[langInputSelect.selectedIndex].value;
 }
 
 function getOutputLang() {
+  /*
+  let outputLang = langOutputSelect.options[langOutputSelect.selectedIndex].value;
+  if (outputLang.slice(0,2) === "ss") {
+    // Device Voices
+    outputLang = outputLang.slice(outputLang.search(":")+1);
+  }
+  return outputLang;
+  */
   return langOutputSelect.options[langOutputSelect.selectedIndex].value;
 }
 
@@ -330,25 +540,66 @@ updateCountry();
 select_dialect.selectedIndex = 11;
 */
 
-// Buttons & Utility
+// Utility
 
-$('#searchSelectInput')
-  .dropdown()
+function wait(timeout) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve();
+    }, timeout);
+  });
+}
+
+function escapeRegExp(str) {
+    return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+}
+
+function replaceAll(str, find, replace) {
+    return str.replace(new RegExp(escapeRegExp(find), 'g'), replace);
+}
+
+function reduceSpacing(str) {
+  return str.replace(/ +(?= )/g,'');
+}
+
+// Init Elements
+
+$('.dropdown')
+  .dropdown({ fullTextSearch: 'exact' })
+  //.dropdown()
 ;
 
-$('#searchSelectOutput')
-  .dropdown()
-;
+var mute = false;
 
-$('#audioSource')
-  .dropdown()
-;
+var volume = 100;
+var pitch = 0.5;
+var rate = 0.5;
 
-$('#audioOutput')
-  .dropdown()
-;
+var volumeSliderActive = false;
+var pitchSliderActive = false;
+var rateSliderActive = false;
 
-$('.ui.slider')
+function toggleMute(element) {
+  element = $(element);
+  if (element.hasClass('up')) {
+    mute = true;
+    element.removeClass('up');
+    element.addClass('mute');
+    element.parent().css('margin-left', '0px !important');
+    volumeSlider.css('pointer-events', 'none');
+    volumeThumb.css('background-color', 'lightgray');
+    volumeFill.css('background-color', 'lightgray');
+  } else {
+    mute = false;
+    element.removeClass('mute');
+    element.addClass('up');
+    volumeSlider.css('pointer-events', 'auto');
+    volumeThumb.css('background-color', 'white');
+    volumeFill.css('background-color', 'black');
+  }
+}
+
+volumeSlider
   .slider({
     min: 0,
     max: 100,
@@ -357,7 +608,7 @@ $('.ui.slider')
     onMove: function (data) {
       volume = data.toFixed();
       try {
-        $('.volume-slider')
+        volumeThumb
           .popup('change content', `${volume}%`)
           .popup('reposition');
       } catch (err) {}
@@ -365,35 +616,148 @@ $('.ui.slider')
   })
 ;
 
-var volume_slider_active = false;
-
 function volume_slider_mousedown() {
-  volume_slider_active = true;
-  $('.volume-slider')
+  volumeSliderActive = true;
+  volumeThumb
     .popup('show')
     .popup('change content', `${volume}%`)
     .popup('reposition');
 };
 
-$(document).on('mouseup', function() {
-  volume_slider_active = false;
-});
-
-$('.volume-slider').mouseenter(function() {
-  $('.volume-slider')
+volumeThumb.mouseenter(function() {
+  volumeThumb
     .popup('show')
     .popup('change content', `${volume}%`)
     .popup('reposition');
 });
 
-$('.volume-slider').mouseleave(function() {
-  if (!volume_slider_active) {
-    $('.volume-slider').popup('hide');
+volumeThumb.mouseleave(function() {
+  if (!volumeSliderActive) {
+    volumeThumb.popup('hide');
   }
 });
 
+pitchSlider
+  .slider({
+    min: 0,
+    max: 100,
+    start: 50,
+    step: 5,
+    onMove: function (data) {
+      pitch = data.toFixed() / 100.0;
+      try {
+        pitchThumb
+          .popup('change content', `${pitch * 2.0}`)
+          .popup('reposition');
+      } catch (err) {}
+    },
+  })
+;
+
+function pitch_slider_mousedown() {
+  pitchSliderActive = true;
+  pitchThumb
+    .popup('show')
+    .popup('change content', `${pitch * 2.0}`)
+    .popup('reposition');
+};
+
+pitchThumb.mouseenter(function() {
+  pitchThumb
+    .popup('show')
+    .popup('change content', `${pitch * 2.0}`)
+    .popup('reposition');
+});
+
+pitchThumb.mouseleave(function() {
+  if (!pitchSliderActive) {
+    pitchThumb.popup('hide');
+  }
+});
+
+rateSlider
+  .slider({
+    min: 0,
+    max: 100,
+    start: 50,
+    step: 5,
+    onMove: function (data) {
+      rate = data.toFixed() / 100.0;
+      try {
+        rateThumb
+          .popup('change content', `${rate * 2.0}`)
+          .popup('reposition');
+      } catch (err) {}
+    },
+  })
+;
+
+function rate_slider_mousedown() {
+  rateSliderActive = true;
+  rateThumb
+    .popup('show')
+    .popup('change content', `${rate * 2.0}`)
+    .popup('reposition');
+};
+
+rateThumb.mouseenter(function() {
+  rateThumb
+    .popup('show')
+    .popup('change content', `${rate * 2.0}`)
+    .popup('reposition');
+});
+
+rateThumb.mouseleave(function() {
+  if (!rateSliderActive) {
+    rateThumb.popup('hide');
+  }
+});
+
+$(document).on('mouseup', function() {
+  volumeSliderActive = false;
+  pitchSliderActive = false;
+  rateSliderActive = false;
+});
+
+function resetDropdownInput(element) {
+  let dropdownParent = $(element).parent().parent();
+  dropdownParent.find('.search').val("");
+  dropdownParent.dropdown('set selected', $('select#searchSelectOutput').dropdown('get value'));
+}
+
+$('select#searchSelectOutput').change(function() {
+    let output_lang = getOutputLang();
+    let alt_lang = output_lang.match(new RegExp(/[a-zA-Z]+-[a-zA-Z]+(?=&)/g));
+    if (alt_lang !== null) {
+      $('#extra-voice-options').removeAttr("style");
+    } else {
+      $('#extra-voice-options').attr("style", "display: none !important");
+    }
+});
+
+var initOptions = true;
+
 optionsButton.click(function() {
+  console.log(getOutputLang());
+  if (initOptions) {
+    // Fix broken dropdown
+    $('[data-value="divider"]').addClass('divider');
+    $('[data-value="divider"]').removeClass('item');
+    $('[data-value="divider"]').attr('onclick', 'resetDropdownInput(this)');
+    $('[data-value="divider"]').removeAttr('data-value');
+    $('[data-value="header"]').addClass('header');
+    $('[data-value="header"]').removeClass('item');
+    $('[data-value="header"]').attr('onclick', 'resetDropdownInput(this)');
+    $('[data-value="header"]').removeAttr('data-value');
+    $('.search').attr('onchange', "$('.message').attr('onclick', 'resetDropdownInput(this)');");
+
+    initOptions = false;
+  }
+
+  // Update device names
   navigator.mediaDevices.enumerateDevices().then(gotDevices).catch(handleError);
+
+  // Modal setup
   $('.ui.modal.options-modal')
     .modal({
       autofocus: false,
@@ -402,29 +766,61 @@ optionsButton.click(function() {
     .modal('show')
   ;
 
-  $('.volume-slider')
+  // Slider setup
+  volumeThumb
     .popup({
       position: 'top center',
       content: `${volume}%`,
       on: 'manual',
     })
   ;
+
+  pitchThumb
+    .popup({
+      position: 'top center',
+      content: `${pitch * 2.0}`,
+      on: 'manual',
+    })
+  ;
+
+  rateThumb
+    .popup({
+      position: 'top center',
+      content: `${rate * 2.0}`,
+      on: 'manual',
+    })
+  ;
 });
 
-transcriptButton.click(function() {
+/*
+function transcriptDropdown() {
   if (transcriptButton.prop("checked")) {
+    transcriptFrame.style.display = "block";
     transcript.style.display = "block";
     scrollTranscript();
   } else {
+    transcriptFrame.style.display = "none";
+    transcript.style.display = "none";
+  }
+}
+*/
+
+transcriptButton.click(function() {
+  if (transcriptButton.prop("checked")) {
+    transcriptFrame.style.display = "block";
+    transcript.style.display = "block";
+    scrollTranscript();
+  } else {
+    transcriptFrame.style.display = "none";
     transcript.style.display = "none";
   }
 });
 
-confidenceButton.click(function() {
-  if (confidenceButton.prop("checked")) {
-    outputConfidence.style.display = "block";
+diagnosticsButton.click(function() {
+  if (diagnosticsButton.prop("checked")) {
+    diagnostics.style.display = "block";
   } else {
-    outputConfidence.style.display = "none";
+    diagnostics.style.display = "none";
   }
 });
 
@@ -567,16 +963,10 @@ function speechButton() {
   }
 }
 
-function wait(timeout) {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      resolve();
-    }, timeout);
-  });
-}
-
 // Translation
 
+//const cors_api_url = 'https://cors-anywhere.herokuapp.com/';
+const cors_api_url = '';
 function getTranslation(sourceLang, targetLang, sourceText) {
   var xhr = new XMLHttpRequest();
 
@@ -598,10 +988,11 @@ function getTranslation(sourceLang, targetLang, sourceText) {
       }
     };
 
-    var url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=" 
-              + sourceLang + "&tl=" + targetLang + "&dt=t&q=" + encodeURI(sourceText);
+    // Example: https://translate.googleapis.com/translate_a/single?client=gtx&dt=t&sl=en-US&tl=ja-JP&q=hello
+    var url = "https://translate.googleapis.com/translate_a/single?client=gtx&dt=t&sl=" 
+              + sourceLang + "&tl=" + targetLang + "&q=" + encodeURI(sourceText);
 
-    xhr.open('GET', url);
+    xhr.open('GET', cors_api_url + url);
     xhr.send();
   });
 }
@@ -627,17 +1018,20 @@ function gotDevices(deviceInfos) {
       select.removeChild(select.firstChild);
     }
   });
+  if (audio_input_selection_disabled) {
+    const option = document.createElement('option');
+    option.text = "Set in browser";
+    audioInputSelect.appendChild(option);
+  }
   for (let i = 0; i !== deviceInfos.length; ++i) {
     const deviceInfo = deviceInfos[i];
     const option = document.createElement('option');
     option.value = deviceInfo.deviceId;
     if (deviceInfo.kind === 'audioinput') {
-      if (audio_input_selection_disabled) {
-        option.text = "Set from browser";
-      } else {
+      if (!audio_input_selection_disabled) {
         option.text = deviceInfo.label || `microphone ${audioInputSelect.length + 1}`;
+        audioInputSelect.appendChild(option);
       }
-      audioInputSelect.appendChild(option);
     } else if (deviceInfo.kind === 'audiooutput') {
       option.text = deviceInfo.label || `speaker ${audioOutputSelect.length + 1}`;
       audioOutputSelect.appendChild(option);
@@ -692,8 +1086,10 @@ audioInputSelect.onchange = function() {
 */
 
 function restartSpeech() {
-  recognition = new SpeechRecognition();
-  testSpeech();
+  if (buttonState == 1) {
+    recognition = new SpeechRecognition();
+    testSpeech();
+  }
 }
 
 audioOutputSelect.onchange = changeAudioDestination;
@@ -727,6 +1123,9 @@ async function playTranscriptAudio(element, audio_url, stop=false) {
 }
 
 async function playAudio(audio_url, stop=false) {
+  if (mute) {
+    return;
+  }
   audio.setAttribute('src', audio_url);
   if (stop) {
     audio.load();
@@ -774,13 +1173,29 @@ async function playTTS(speech) {
     //~console.log("try playTTS");
     let input_lang = getInputLang();
     let output_lang = getOutputLang();
+    let alt_lang = output_lang.match(new RegExp(/[a-zA-Z]+-[a-zA-Z]+(?=&)/g));
     /* Using native speech synthesis
     speechSynthesis.speak(new SpeechSynthesisUtterance(speech.join(" ")));
     return;
     */
     if (translate) {
-      speech = await getTranslation(input_lang, output_lang, speech.join(" "));
-      speech = speech.split(" ");
+      let translate_success = false;
+      if (alt_lang !== null) {
+        // Don't translate if same language
+        if (input_lang !== alt_lang[0]) {
+          speech = await getTranslation(input_lang, alt_lang[0], speech.join(" "));
+          translate_success = true;
+        }
+      } else {
+        // Don't translate if same language
+        if (input_lang !== output_lang) {
+          speech = await getTranslation(input_lang, output_lang, speech.join(" "));
+          translate_success = true;
+        }
+      }
+      if (translate_success) {
+        speech = speech.split(" ");
+      }
     }
     // Remove empty strings
     speech = speech.filter(function(el) { return el; });
@@ -792,7 +1207,15 @@ async function playTTS(speech) {
     if (speech === "") {
       return;
     }
-    let audio_url = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=${output_lang}&q=${speech}`;
+
+    let audio_url = "";
+    if (alt_lang !== null) {
+      // Example: https://code.responsivevoice.org/getvoice.php?t=hello&client=tw-ob&sv=g1&vn=&pitch=0.5&rate=0.5&vol=1&tl=en-US&gender=male
+      audio_url = `https://code.responsivevoice.org/getvoice.php?t=${speech}&client=tw-ob&sv=g1&vn=&pitch=${pitch}&rate=${rate}&vol=1&tl=${output_lang}`
+    } else {
+      // Example: https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=en-US&q=hello
+      audio_url = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=${output_lang}&q=${speech}`;
+    }
     appendTranscript(speech_text, audio_url);
     playAudio(audio_url);
   } catch (err) {
@@ -869,7 +1292,7 @@ async function playNonSpacedLangTTS(intspeech) {
 
 async function playInterimTTS(intspeech) {
   intspeech = intspeech.trim();
-  //~console.log(intspeech);
+  console.log(intspeech);
 
   // Check for validation type
   if (isSpacedLang(getInputLang())) {

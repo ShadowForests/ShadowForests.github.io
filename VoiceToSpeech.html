@@ -13,6 +13,7 @@
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.7.6/dist/semantic.min.css">
     <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.7.6/dist/semantic.min.js"></script>
+    <script src="https://code.responsivevoice.org/responsivevoice.js"></script>
     <link rel="stylesheet" href="style.css">
     <!--[if lt IE 9]>
       <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -28,8 +29,19 @@
         <button id="testButton" class="btn center">Start</button>
         <button id="optionsButton" class="btn btn-square"><i class="cog icon img-centered"></i></button>
       </div>
-
-      <div id="transcript" class="scroller ui raised segment transcript options"></div>
+      <div id="transcript-frame" class="ui top attached raised segment header transcript-frame unselectable" unselectable="on">
+        <!--
+        <div class="left floated hover-button button-dropdown button-dropdown-active" onclick="transcriptDropdown()">
+          <i id="transcript-dropdown" class="dropdown icon icon img-centered button-dropdown-icon button-dropdown-icon-active"></i>
+          Transcript
+        </div>
+        -->
+        Transcript
+        <div class="right floated hover-button">
+          <i class="close icon img-centered button-medium" onclick="transcriptButton.click()"></i>
+        </div>
+      </div>
+      <div id="transcript" class="scroller ui bottom attached raised segment transcript options"></div>
     </div>
 
     <div class="absolute-bottom unselectable" unselectable="on">
@@ -41,7 +53,7 @@
 
         <div class="content">
           <div class="ui container grid">
-            <div class="row no-padding">
+            <div class="row no-bottom-padding">
               <div class="eight wide column">
                 <p class="option-text">Input Device</p>
                 <select id="audioSource" class="ui selection dropdown wide-select disabled">
@@ -55,7 +67,7 @@
               </div>
             </div>
 
-            <div class="row no-padding">
+            <div class="row no-bottom-padding">
               <div class="eight wide column">
                 <p class="option-text">Input Language</p>
                 <select id="searchSelectInput" class="ui search selection dropdown wide-select">
@@ -69,33 +81,61 @@
               </div>
             </div>
 
-            <div class="row no-padding">
+            <div class="row top-padding no-bottom-padding">
               <div class="wide column">
-                <p class="left floated option-text">Output Volume</p>
-                <p></p>
-                <div class="ui slider" id="slider-1">
+                <p class="option-text no-bottom-padding">Output Volume</p>
+                <div class="left floated">
+                  <i class="volume up icon img-centered volume-icon hover-button" onclick="toggleMute(this)"></i>
+                </div>
+                <div id="volume-slider" class="ui slider slider-full right floated">
                   <div class="inner">
                     <div class="track"></div>
-                    <div class="track-fill"></div>
-                    <div class="thumb volume-slider" onmousedown="volume_slider_mousedown()"></div>
+                    <div id="volume-fill" class="track-fill"></div>
+                    <div id="volume-thumb" class="thumb" onmousedown="volume_slider_mousedown()"></div>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div class="row no-padding">
+            <div id="extra-voice-options" class="row no-top-padding no-bottom-padding" style="display: none !important">
               <div class="eight wide column">
-                <p class="left floated option-text">Show Transcript</p>
-                <div class="ui right floated toggle checkbox">
-                  <input id="transcript-checkbox" type="checkbox" name="public">
-                  <label></label>
+                <p class="left floated option-text">Pitch</p>
+                <p></p>
+                <div id="pitch-slider" class="ui slider">
+                  <div class="inner">
+                    <div class="track"></div>
+                    <div class="track-fill"></div>
+                    <div id="pitch-thumb" class="thumb" onmousedown="pitch_slider_mousedown()"></div>
+                  </div>
                 </div>
               </div>
 
               <div class="eight wide column">
-                <p class="left floated option-text">Show Confidence</p>
+                <p class="left floated option-text">Rate</p>
+                <p></p>
+                <div id="rate-slider" class="ui slider">
+                  <div class="inner">
+                    <div class="track"></div>
+                    <div class="track-fill"></div>
+                    <div id="rate-thumb" class="thumb" onmousedown="rate_slider_mousedown()"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row no-bottom-padding">
+              <div class="eight wide column">
+                <p class="left floated option-text">Show Transcript</p>
                 <div class="ui right floated toggle checkbox">
-                  <input id="confidence-checkbox" type="checkbox" name="public">
+                  <input id="transcript-checkbox" type="checkbox" name="public" checked="true">
+                  <label></label>
+                </div>
+                </div>
+
+                <div class="eight wide column">
+                  <p class="left floated option-text">Show Diagnostics</p>
+                <div class="ui right floated toggle checkbox">
+                  <input id="diagnostics-checkbox" type="checkbox" name="public" checked="true">
                   <label></label>
                 </div>
               </div>
@@ -111,7 +151,7 @@
               </div>
 
               <div class="eight wide column">
-                <p class="left floated option-text">Translate</p>
+                <p class="left floated option-text">Translation</p>
                 <div class="ui right floated toggle checkbox">
                   <input id="translate-checkbox" type="checkbox" name="public">
                   <label></label>
@@ -122,7 +162,7 @@
         </div>
 
         <div class="actions bottom-margin-media">
-          ;)
+          Created by ShadowForest (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧
         </div>
       </div>
 
@@ -133,7 +173,7 @@
 -->
 
       <div class="center bottom-margin">
-        <p class="output bottom-margin">
+        <p id="diagnostics" class="output bottom-margin">
           <label id="outputDiag">...diagnostic messages</label>
           </br>
           <label id="outputConfidence" class="confidence">Confidence: —</label>
