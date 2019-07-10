@@ -738,7 +738,7 @@ $('select#searchSelectOutput').change(function() {
 var initOptions = true;
 
 optionsButton.click(function() {
-  console.log(getOutputLang());
+  //~console.log(getOutputLang());
   if (initOptions) {
     // Fix broken dropdown
     $('[data-value="divider"]').addClass('divider');
@@ -1292,7 +1292,7 @@ async function playNonSpacedLangTTS(intspeech) {
 
 async function playInterimTTS(intspeech) {
   intspeech = intspeech.trim();
-  console.log(intspeech);
+  //~console.log(intspeech);
 
   // Check for validation type
   if (isSpacedLang(getInputLang())) {
